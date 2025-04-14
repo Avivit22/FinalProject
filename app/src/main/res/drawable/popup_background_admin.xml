@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- שכבה ראשונה: תמונת הרקע עם פינות מעוגלות -->
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="30dp"/> <!-- פינות מעוגלות לתמונה -->
+            <solid android:color="@android:color/transparent" /> <!-- רקע שקוף -->
+        </shape>
+    </item>
+
+    <item>
+        <bitmap
+            android:src="@drawable/popupwindow"
+            android:gravity="fill"
+            android:alpha="0.95"
+            />
+    </item>
+
+    <!-- שכבה שנייה: שכבה שקופה עם פינות מעוגלות מעל התמונה -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#80FFFFFF"/> <!-- רקע שקוף חלקית -->
+            <corners android:radius="30dp"/> <!-- מבטיח שהתמונה לא תשבור את הפינות -->
+        </shape>
+    </item>
+
+    <!-- שכבה שלישית: מסגרת מעוגלת -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent"/> <!-- שקוף -->
+            <corners android:radius="30dp"/> <!-- פינות מעוגלות -->
+            <stroke android:width="3dp" android:color="#CCCCCC"/> <!-- מסגרת -->
+        </shape>
+    </item>
+
+</layer-list>

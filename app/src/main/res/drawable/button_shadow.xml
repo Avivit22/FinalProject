@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:right="2dp" android:top="2dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#55000000" /> <!-- צבע הצל (שקוף) -->
+            <corners android:radius="12dp" /> <!-- פינות עגולות -->
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#87CEEB" />
+            <corners android:radius="12dp" /> <!-- פינות עגולות -->
+        </shape>
+    </item>
+</layer-list>

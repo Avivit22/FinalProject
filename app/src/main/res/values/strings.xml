@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">My ApplicationT1</string>
+
+    <string name="select_gender">מגדר</string>
+    <string-array name="gender_options">
+        <item>זכר</item>
+        <item>נקבה</item>
+    </string-array>
+
+    <string name="select_day_of_week">יום בשבוע</string>
+    <string-array name="days_of_week">
+        <item>ראשון</item>
+        <item>שני</item>
+        <item>שלישי</item>
+        <item>רביעי</item>
+        <item>חמישי</item>
+        <item>שישי</item>
+    </string-array>
+
+</resources>

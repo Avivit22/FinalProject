@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- תמונת רקע -->
+    <ImageView
+        android:id="@+id/backgroundImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/background1"
+        android:scaleType="centerCrop"
+        android:alpha="0.2" />
+
+    <!-- קובץ עליון עם לוגו ותמונה נוספת -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:gravity="center_vertical">
+
+        <!-- תמונה בצד שמאל -->
+        <ImageView
+            android:id="@+id/logoImage"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="start"
+            android:src="@drawable/logo"
+            android:layout_marginLeft="10dp"/>
+
+        <!-- רווח בין התמונות -->
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+
+    </LinearLayout>
+
+    <!-- טקסט כותרת -->
+    <TextView
+        android:id="@+id/titleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:text="הוספת מדריך חדש למערכת"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#000000"
+        />
+
+    <!-- טופס להזנת פרטים -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/titleText"
+        android:layout_marginTop="16dp">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp">
+
+            <!-- שם מלא -->
+            <EditText
+                android:id="@+id/fullNameInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="שם מלא"
+                android:layout_gravity="end"
+                android:layout_marginBottom="5dp"
+                android:inputType="text|textCapSentences"
+                android:textDirection="rtl"
+                android:gravity="right"
+                />
+
+            <!-- מספר פעיל -->
+            <EditText
+                android:id="@+id/activeNumberInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="מספר פעיל"
+                android:inputType="number"
+                android:layout_marginBottom="5dp"/>
+
+            <!-- שדה מייל -->
+            <EditText
+                android:id="@+id/emailInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="מייל"
+                android:inputType="textEmailAddress"
+                android:layout_marginBottom="5dp"/>
+
+            <!--  מגדר  -->
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="5dp">
+
+                <!-- Spinner של מגדר מיושר לימין -->
+                <Spinner
+                    android:id="@+id/genderSpinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:entries="@array/gender_options"
+                    android:gravity="end"
+                    android:spinnerMode="dropdown"
+                    android:prompt="@string/select_gender"
+                    />
+
+                <!-- טקסט "מגדר" מיושר לימין -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="מגדר"
+                    android:gravity="center_vertical"
+                    android:textSize="16dp"
+                    android:layout_marginEnd="8dp"/>
+
+            </LinearLayout>
+
+
+            <!-- תאריך לידה -->
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="end"
+                android:layout_marginBottom="5dp">
+
+                <Button
+                    android:id="@+id/birthDateButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="בחר תאריך"
+                    android:backgroundTint="#7387CEEB"
+                    android:textColor="#000000"
+                    />
+
+                <Space
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="תאריך לידה"
+                    android:gravity="center_vertical"
+                    android:textSize="16dp"/>
+            </LinearLayout>
+
+            <!--  יום בשבוע  -->
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="5dp">
+
+
+                <!-- Spinner של מגדר מיושר לימין -->
+                <Spinner
+                    android:id="@+id/dayOfWeekSpinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:entries="@array/days_of_week"
+                    android:gravity="end"
+                    android:spinnerMode="dropdown"
+                    android:prompt="@string/select_gender"
+                    />
+
+                <!-- טקסט "מגדר" מיושר לימין -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="יום בשבוע בו מדריך"
+                    android:gravity="center_vertical"
+                    android:textSize="16dp"
+                    android:layout_marginEnd="8dp"/>
+
+            </LinearLayout>
+
+
+            <!-- מספר טלפון מדריך -->
+            <EditText
+                android:id="@+id/phoneInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="מספר טלפון נייד"
+                android:inputType="phone"
+                android:gravity="end"
+                android:layout_marginBottom="5dp"/>
+
+            <!-- תאריך הצטרפות -->
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="end"
+                android:layout_marginBottom="5dp">
+
+                <Button
+                    android:id="@+id/joinDateButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="בחר תאריך"
+                    android:backgroundTint="#7387CEEB"
+                    android:textColor="#000000"/>
+
+                <!-- רווח קטן בין הטקסט לכפתור -->
+                <Space
+                    android:layout_width="10dp"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="תאריך הצטרפות"
+                    android:gravity="center_vertical"
+                    android:textSize="16dp"/>
+            </LinearLayout>
+
+            <!-- כתובת -->
+            <EditText
+                android:id="@+id/addressInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="כתובת"
+                android:inputType="textPostalAddress"
+                android:layout_marginBottom="5dp"/>
+
+            <!-- שמות ההורים -->
+            <EditText
+                android:id="@+id/parent1NameInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="שם הורה 1"
+                android:inputType="textPersonName"
+                android:layout_marginBottom="5dp"/>
+
+            <EditText
+                android:id="@+id/parent2NameInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="שם הורה 2"
+                android:inputType="textPersonName"
+                android:layout_marginBottom="5dp"/>
+
+            <!-- טלפון הורה -->
+            <EditText
+                android:id="@+id/parentPhoneInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="מספר טלפון נייד של אחד ההורים"
+                android:inputType="phone"
+                android:gravity="end"
+                android:layout_marginBottom="5dp"/>
+
+            <!-- קונטיינר להצגת תמונה וכפתור באותה שורה -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="end"
+                android:layout_marginBottom="10dp">
+
+                <!-- תמונת פרופיל -->
+                <ImageView
+                    android:id="@+id/profileImage"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:src="@drawable/default_profile"
+                    android:scaleType="centerCrop"
+                    android:padding="5dp"
+                    android:layout_marginEnd="10dp"/>
+
+                <!-- כפתור להעלאת תמונה -->
+                <Button
+                    android:id="@+id/uploadImageButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="בחר תמונה"
+                    android:backgroundTint="#7387CEEB"
+                    android:textColor="#000000"/>
+            </LinearLayout>
+
+            <!-- כפתור הוספה -->
+            <Button
+                android:id="@+id/addButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="הוספה למערכת"
+                android:backgroundTint="#004FAA" />
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ShowScheduleActivity">
+
+    <!-- תמונת רקע -->
+    <ImageView
+        android:id="@+id/backgroundImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/background1"
+        android:scaleType="centerCrop"
+        android:alpha="0.2" />
+
+    <!-- קובץ עליון עם לוגו ותמונה נוספת -->
+    <RelativeLayout
+        android:id="@+id/headerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp">
+
+        <!-- תמונה בצד שמאל -->
+        <ImageView
+            android:id="@+id/logoImage"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/logo"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="10dp"/>
+
+        <!-- טקסט כותרת ממורכז לשורה כולה -->
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="לוח חוגים"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:layout_centerInParent="true"/>
+    </RelativeLayout>
+
+
+
+    <!-- לוח שנה בעברית -->
+    <CalendarView
+        android:id="@+id/calendarView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/headerLayout"
+        android:firstDayOfWeek="1"
+        android:dateTextAppearance="@style/CalendarDateAppearance"
+        android:weekDayTextAppearance="@style/CalendarWeekDayAppearance"/>
+
+    <!-- רשימת המדריכים לכל יום -->
+    <TextView
+        android:id="@+id/tvInstructorsLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="מדריכים בתאריך זה:"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_below="@id/calendarView"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="16dp"
+        android:layout_alignParentRight="true"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvInstructors"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_below="@id/tvInstructorsLabel"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:layoutDirection="rtl"
+        android:textDirection="rtl"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/item_guide_for_show_schedule"
+        />
+
+    <!-- רשימת החניכים לכל יום -->
+    <TextView
+        android:id="@+id/tvStudentsLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="חניכים בתאריך זה:"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_below="@id/rvInstructors"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="16dp"
+        android:layout_alignParentRight="true"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvStudents"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_below="@id/tvStudentsLabel"
+        android:layout_margin="10dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/item_student_for_show_schedule"
+        android:layoutDirection="rtl"
+        android:textDirection="rtl"
+        />
+
+</RelativeLayout>

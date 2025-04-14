@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- רקע עם תמונה שקופה -->
+    <ImageView
+        android:id="@+id/backgroundImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/background1"
+        android:scaleType="centerCrop"
+        android:alpha="0.2" /> <!-- שקיפות  -->
+
+    <!-- תוכן המסך -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:layout_marginBottom="30dp"
+            android:gravity="center_vertical">
+
+            <!-- תמונה בצד שמאל -->
+            <ImageView
+                android:id="@+id/logoImage"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="start"
+                android:src="@drawable/logo" />
+
+            <!-- רווח בין התמונות (ייתן מיקום לתמונה השנייה בצד ימין) -->
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <!-- כותרת במרכז -->
+            <TextView
+                android:id="@+id/page_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+
+                android:gravity="center"
+                android:text="רישום לשיעור השלמה"
+                android:textColor="#494646"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <!-- רווח אחרי הכותרת -->
+            <Space
+                android:layout_width="16dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+
+            <!-- תמונה בצד ימין -->
+            <!--<ImageView
+                android:id="@+id/options_icon"
+                android:layout_width="30dp"
+                android:layout_height="50dp"
+                android:layout_gravity="end"
+                android:src="@drawable/options_icon" />-->
+        </LinearLayout>
+
+        <!-- שורת חיפוש חניך -->
+        <EditText
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:id="@+id/search_student"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="חיפוש שם חניך"
+            android:textSize="18sp"
+            android:textColor="#000000"
+            android:textColorHint="#A9A9A9"
+            android:padding="12dp"
+            android:drawableStart="@drawable/search_icon" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="35dp"
+            android:layout_marginBottom="20dp"
+            android:gravity="center_vertical"
+            android:layoutDirection="rtl">
+
+            <!-- טקסט המצביע על היום הרגיל של החניך -->
+            <TextView
+                android:id="@+id/regular_day_label"
+                android:layout_width="287dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:paddingStart="8dp"
+                android:text="באופן כללי, החניך משובץ לחוג בימי :"
+                android:textColor="#494646"
+                android:textSize="18dp" />
+
+            <!-- טקסט ההשלמה -->
+            <TextView
+                android:id="@+id/regular_day"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="שלישי"
+                android:textColor="#494646"
+                android:textSize="18dp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/completion_date_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="החניך יבצע שיעור השלמה בתאריך:"
+            android:textSize="18dp"
+            android:textColor="#494646"
+            android:layout_marginTop="16dp"
+            android:paddingStart="8dp" />
+
+        <!-- כפתור לתאריך שיעור השלמה -->
+        <Button
+            android:id="@+id/completion_date_button"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="מועד שיעור השלמה"
+            android:textSize="16sp"
+            android:layout_marginTop="8dp"
+            android:layout_gravity="center"
+            android:backgroundTint="#CFCECA"
+            android:textColor="#424040"
+            android:layout_marginBottom="5dp"
+            android:textStyle="bold"
+             />
+
+        <!-- טקסט שמציג את התאריך הנבחר עבור "מועד שיעור השלמה" -->
+        <TextView
+            android:id="@+id/completion_date_selected"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="16sp"
+            android:textColor="#494646"
+            android:gravity="center"
+            android:visibility="gone"
+            android:layout_marginBottom="10dp"
+            />
+
+        <!-- האם ההשלמה היא במקום תאריך אחר -->
+        <TextView
+            android:id="@+id/alternative_date_question"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="האם ההשלמה היא במקום תאריך אחר?"
+            android:textSize="18dp"
+            android:textColor="#494646"
+            android:layout_marginTop="16dp"
+            android:paddingStart="8dp" />
+
+        <!-- כפתורי בחירה האם ההשלמה במקום תאריך אחר -->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical">
+
+            <Button
+                android:id="@+id/yes_button"
+                android:layout_width="0dp"
+                android:layout_height="55dp"
+                android:layout_gravity="center"
+                android:layout_marginEnd="16dp"
+                android:backgroundTint="#7387CEEB"
+                android:text="כן"
+                android:textColor="#494646"
+                android:textSize="15sp"
+                android:layout_weight="1"
+                android:padding="12dp"
+                android:elevation="8dp"/>
+
+            <Button
+                android:id="@+id/no_button"
+                android:layout_width="0dp"
+                android:layout_height="55dp"
+                android:text="לא, שליחה לאישור מנהל"
+                android:textSize="15dp"
+                android:textColor="#000000"
+                android:layout_weight="1"
+                android:backgroundTint="#7387CEEB"
+                android:padding="12dp" />
+        </LinearLayout>
+
+        <!-- רישום חיסור אם לחצו על "כן" -->
+        <TextView
+            android:id="@+id/missing_date_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="רישום חיסור עבור התאריך:"
+            android:textSize="18dp"
+            android:textColor="#494646"
+            android:layout_marginTop="35dp"
+            android:paddingStart="8dp"
+            />
+
+        <!-- כפתור בחירת תאריך חיסור אם לחצו "כן" -->
+        <Button
+            android:id="@+id/missing_date_button"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="בחר תאריך"
+            android:textSize="16sp"
+            android:textColor="#000000"
+            android:layout_gravity="center"
+            android:backgroundTint="#7287CEEB"
+            android:layout_marginTop="8dp" />
+
+        <!-- טקסט שמציג את התאריך הנבחר עבור "תאריך חיסור" -->
+        <TextView
+            android:id="@+id/missing_date_selected"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="16sp"
+            android:textColor="#494646"
+            android:gravity="center"
+            android:visibility="gone" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <!-- כפתור שמירה בתחתית -->
+        <Button
+            android:id="@+id/save_button"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:text="שמור"
+            android:textSize="22sp"
+            android:layout_marginTop="24dp"
+            android:layout_gravity="center"
+            android:backgroundTint="#004FAA"
+            android:textColor="#FFFFFF"
+            android:layout_marginBottom="20dp"
+            android:textStyle="bold" />
+
+
+    </LinearLayout>
+</FrameLayout>
