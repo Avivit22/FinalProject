@@ -19,6 +19,7 @@ public class Student {
     private String leavingDate;
 
     private String classId; // מזהה של ה-CLASS אליו הוא שייך
+    private Boolean isActive;
 
     public Student() {}
 
@@ -41,6 +42,7 @@ public class Student {
         this.profileImageBase64 = profileImageBase64;
         this.leavingDate = leavingDate;
         this.classId = classId;
+        this.isActive = true;
     }
 
     public String getFullName() {
@@ -163,7 +165,10 @@ public class Student {
         this.classId = classId;
     }
 
-    // 🔹 toString
+    public Boolean getIsActive() { return isActive; }
+    public void setIsActive(Boolean active) { isActive = active; }
+
+
     @NonNull
     @Override
     public String toString() {
@@ -183,6 +188,7 @@ public class Student {
                 ", photo='" + profileImageBase64 + '\'' +
                 ", leavingDate='" + leavingDate + '\'' +
                 ", classId='" + classId + '\'' +
+                ", isActive=" + isActive +
                 '}';
     }
 

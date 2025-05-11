@@ -22,7 +22,6 @@ public class Class {
         this.attendanceStatus = attendanceStatus;
     }
 
-    // 🔹 Getters ו־Setters
 
     public String getClassDate() {
         return classDate;

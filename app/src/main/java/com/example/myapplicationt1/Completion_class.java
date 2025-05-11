@@ -8,7 +8,6 @@ public class Completion_class {
     private Date completionDate;
     private String originalClassId;
 
-    // בנאי ריק - חובה עבור Firebase
     public Completion_class() {}
 
     public Completion_class(String originalDay, Date originalDate, Date completionDate, String originalClassId) {

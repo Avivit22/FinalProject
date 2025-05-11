@@ -58,7 +58,7 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
     //private Button searchButton;
     private ScrollView detailsScrollView;
 
-    // ודאי שהשמות כאן תואמים ל-IDים שהגדרת ב-initializeUI
+
     private EditText fullNameEditText, organizationIdEditText, birthDateEditText,
             gradeEditText, phoneEditText, joinDateEditText, addressEditText,
             parent1NameEditText, parent2NameEditText, parentPhoneEditText;
@@ -69,7 +69,7 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
     private Uri newImageUri = null;
     private Bitmap currentProfileBitmap = null;
     private String currentStudentDocumentId = null;
-    private Student currentStudent = null; // האובייקט שיחזיק את נתוני החניך
+    private Student currentStudent = null;
 
     private final ActivityResultLauncher<Intent> imagePickerLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
@@ -84,9 +84,8 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
                                 Log.e(TAG, "Error loading new image bitmap", e);
                                 Toast.makeText(this, "שגיאה בטעינת תמונה חדשה", Toast.LENGTH_SHORT).show();
                                 newImageUri = null;
-                                currentProfileBitmap = null; // איפוס אם הייתה שגיאה בטעינת החדשה
+                                currentProfileBitmap = null;
                                 // החזרת התמונה הקודמת אם הייתה
-                                // *** שינוי כאן: שימוש ב-getProfileImageBase64() ***
                                 if (currentStudent != null && currentStudent.getProfileImageBase64() != null && !currentStudent.getProfileImageBase64().isEmpty()){
                                     loadBase64Image(currentStudent.getProfileImageBase64(), profileImage);
                                 } else {
@@ -95,13 +94,10 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
                             }
                         } else {
                             Log.d(TAG, "New image selection cancelled or failed.");
-                            newImageUri = null; // ודאי שגם פה מאפסים את newImageUri
-                            // השארת התמונה הנוכחית (שנטענה מ-Firestore או הייתה קיימת לפני כן)
-                            // או ניקוי אם לא הייתה תמונה קודמת
-                            if (currentProfileBitmap != null) { // אם currentProfileBitmap מכיל את התמונה הישנה (או חדשה שנטענה קודם)
+                            newImageUri = null;
+                            if (currentProfileBitmap != null) {
                                 profileImage.setImageBitmap(currentProfileBitmap);
                             } else if (currentStudent != null && currentStudent.getProfileImageBase64() != null && !currentStudent.getProfileImageBase64().isEmpty()){
-                                // *** שינוי כאן: שימוש ב-getProfileImageBase64() ***
                                 loadBase64Image(currentStudent.getProfileImageBase64(), profileImage);
                             } else {
                                 profileImage.setImageBitmap(null);
@@ -129,7 +125,7 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
         detailsScrollView = findViewById(R.id.detailsScrollView);
 
         fullNameEditText = findViewById(R.id.fullNameEditText);
-        organizationIdEditText = findViewById(R.id.organizationIdEditText); // זה צריך להתאים ל-activeNumber ב-Student
+        organizationIdEditText = findViewById(R.id.organizationIdEditText);
         birthDateEditText = findViewById(R.id.birthDateEditText);
         gradeEditText = findViewById(R.id.gradeEditText);
         phoneEditText = findViewById(R.id.phoneEditText);
@@ -176,7 +172,6 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
         ImageView logoImage = findViewById(R.id.logoImage);
         logoImage.setOnClickListener(v -> routeUserBasedOnType());
 
-        //searchButton.setOnClickListener(v -> searchStudentByName());
         searchStudentAutoComplete.setOnItemClickListener((parent, view, position, id) -> searchStudentByName());
 
         birthDateEditText.setOnClickListener(v -> showDatePickerDialog(birthDateEditText));
@@ -198,14 +193,20 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
 
     private void loadStudentNamesForAutoComplete() {
         db.collection("students")
+                .whereEqualTo("isActive", true)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         List<String> studentNames = new ArrayList<>();
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            String name = document.getString("fullName");
-                            if (name != null && !name.isEmpty()) {
-                                studentNames.add(name);
+                        if (task.getResult() != null && !task.getResult().isEmpty()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Boolean isActive = document.getBoolean("isActive");
+                                if (isActive != null && isActive) { // רק אם השדה קיים והוא true
+                                    String name = document.getString("fullName");
+                                    if (name != null && !name.isEmpty()) {
+                                        studentNames.add(name);
+                                    }
+                                }
                             }
                         }
                         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
@@ -216,6 +217,7 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
                     }
                 });
     }
+
 
     private void searchStudentByName() {
         String studentNameToSearch = searchStudentAutoComplete.getText().toString().trim();
@@ -228,7 +230,9 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
         currentStudentDocumentId = null;
         currentStudent = null;
 
-        db.collection("students")
+        Log.d(TAG, "Searching for student: " + studentNameToSearch);
+
+        db.collection("students") // חיפוש ב-collection students
                 .whereEqualTo("fullName", studentNameToSearch)
                 .limit(1)
                 .get()
@@ -237,11 +241,19 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
                         if (task.getResult() != null && !task.getResult().isEmpty()) {
                             DocumentSnapshot document = task.getResult().getDocuments().get(0);
                             currentStudentDocumentId = document.getId();
-                            currentStudent = document.toObject(Student.class); // כאן קורית ההמרה
+                            currentStudent = document.toObject(Student.class);
                             if (currentStudent != null) {
-                                populateStudentDetails(currentStudent);
-                                detailsScrollView.setVisibility(View.VISIBLE);
-                                Toast.makeText(ShowUpdateStudentActivity.this, "חניך נמצא", Toast.LENGTH_SHORT).show();
+                                //  בדיקה אם החניך פעיל לפני הצגת הפרטים
+                                if (currentStudent.getIsActive() == null || currentStudent.getIsActive()) {
+                                    populateStudentDetails(currentStudent);
+                                    detailsScrollView.setVisibility(View.VISIBLE);
+                                    Toast.makeText(ShowUpdateStudentActivity.this, "חניך נמצא", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(ShowUpdateStudentActivity.this, "החניך אינו פעיל יותר", Toast.LENGTH_LONG).show();
+                                    detailsScrollView.setVisibility(View.GONE);
+                                    currentStudentDocumentId = null;
+                                    currentStudent = null;
+                                }
                             } else {
                                 Toast.makeText(ShowUpdateStudentActivity.this, "שגיאה בהמרת נתוני חניך", Toast.LENGTH_SHORT).show();
                             }
@@ -295,31 +307,31 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
             currentProfileBitmap = null;
             return;
         }
-        Log.d(TAG, "Attempting to decode Base64 string of length: " + base64String.length()); // חשוב!
+        Log.d(TAG, "Attempting to decode Base64 string of length: " + base64String.length());
         try {
             byte[] decodedBytes = Base64.decode(base64String, Base64.DEFAULT);
             if (decodedBytes == null || decodedBytes.length == 0) {
-                Log.e(TAG, "Base64.decode returned null or empty byte array."); // חשוב!
+                Log.e(TAG, "Base64.decode returned null or empty byte array.");
                 imageView.setImageBitmap(null);
                 currentProfileBitmap = null;
                 return;
             }
-            Log.d(TAG, "Decoded byte array length: " + decodedBytes.length); // חשוב!
+            Log.d(TAG, "Decoded byte array length: " + decodedBytes.length);
 
             currentProfileBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
             if (currentProfileBitmap != null) {
                 imageView.setImageBitmap(currentProfileBitmap);
-                Log.i(TAG, "Base64 image loaded successfully into ImageView."); // חשוב!
+                Log.i(TAG, "Base64 image loaded successfully into ImageView.");
             } else {
-                Log.e(TAG, "BitmapFactory.decodeByteArray returned null. Invalid image data in Base64?"); // חשוב!
+                Log.e(TAG, "BitmapFactory.decodeByteArray returned null. Invalid image data in Base64?");
                 imageView.setImageBitmap(null);
             }
         } catch (IllegalArgumentException e) {
-            Log.e(TAG, "IllegalArgumentException while decoding Base64 image. String might be malformed.", e); // חשוב!
+            Log.e(TAG, "IllegalArgumentException while decoding Base64 image. String might be malformed.", e);
             imageView.setImageBitmap(null);
             currentProfileBitmap = null;
         } catch (OutOfMemoryError e) {
-            Log.e(TAG, "OutOfMemoryError while decoding Base64 image. Image might be too large.", e); // חשוב!
+            Log.e(TAG, "OutOfMemoryError while decoding Base64 image. Image might be too large.", e);
             Toast.makeText(this, "התמונה גדולה מדי להצגה (נגמר הזיכרון)", Toast.LENGTH_LONG).show();
             imageView.setImageBitmap(null);
             currentProfileBitmap = null;
@@ -353,18 +365,17 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
 
         Map<String, Object> updatedData = new HashMap<>();
         updatedData.put("fullName", fullNameEditText.getText().toString().trim());
-        // *** שינוי: שימוש בשם השדה הנכון כפי שהוא ב-Firestore (וב-Student.java) ***
-        updatedData.put("activeNumber", organizationIdEditText.getText().toString().trim()); // היה organizationId
-        updatedData.put("birthDate", birthDateEditText.getText().toString()); // היה dateOfBirth
+        updatedData.put("activeNumber", organizationIdEditText.getText().toString().trim());
+        updatedData.put("birthDate", birthDateEditText.getText().toString());
         updatedData.put("grade", gradeEditText.getText().toString().trim());
-        updatedData.put("phone", phoneEditText.getText().toString().trim()); // היה phoneNumber
-        updatedData.put("joinDate", joinDateEditText.getText().toString()); // היה joiningDate
+        updatedData.put("phone", phoneEditText.getText().toString().trim());
+        updatedData.put("joinDate", joinDateEditText.getText().toString());
         updatedData.put("address", addressEditText.getText().toString().trim());
         updatedData.put("parent1Name", parent1NameEditText.getText().toString().trim());
         updatedData.put("parent2Name", parent2NameEditText.getText().toString().trim());
-        updatedData.put("parentPhone", parentPhoneEditText.getText().toString().trim()); // היה parentPhoneNumber
+        updatedData.put("parentPhone", parentPhoneEditText.getText().toString().trim());
         updatedData.put("gender", genderSpinner.getSelectedItem().toString());
-        updatedData.put("dayOfWeek", dayOfWeekSpinner.getSelectedItem().toString()); // היה classDay
+        updatedData.put("dayOfWeek", dayOfWeekSpinner.getSelectedItem().toString());
 
         String newBase64Image = "";
         if (currentProfileBitmap != null) {
@@ -435,7 +446,6 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
     }
 
     private void showDeletePopup() {
-        // ... (ללא שינוי, אך ודאי שמשתמש ב-currentStudentDocumentId) ...
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         View popupView = getLayoutInflater().inflate(R.layout.popup_delete, null);
         final EditText departureDateEditText = popupView.findViewById(R.id.departureDateEditText);
@@ -451,6 +461,7 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
                 if (currentStudentDocumentId != null) {
                     Map<String, Object> update = new HashMap<>();
                     update.put("leavingDate", departureDate);
+                    update.put("isActive", false);
                     db.collection("students").document(currentStudentDocumentId).update(update)
                             .addOnSuccessListener(aVoid -> {
                                 Toast.makeText(ShowUpdateStudentActivity.this, "תאריך עזיבה נשמר", Toast.LENGTH_SHORT).show();
@@ -458,6 +469,7 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
                                 detailsScrollView.setVisibility(View.GONE);
                                 searchStudentAutoComplete.setText("");
                                 clearStudentDetailsForm();
+                                loadStudentNamesForAutoComplete();
                             })
                             .addOnFailureListener(e -> Toast.makeText(ShowUpdateStudentActivity.this, "שגיאה בעדכון תאריך עזיבה", Toast.LENGTH_SHORT).show());
                 }
