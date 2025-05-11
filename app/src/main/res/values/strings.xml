@@ -8,6 +8,7 @@
     </string-array>
 
     <string name="select_day_of_week">יום בשבוע</string>
+    <string name="choosedate">בחר תאריך</string>
     <string-array name="days_of_week">
         <item>ראשון</item>
         <item>שני</item>
