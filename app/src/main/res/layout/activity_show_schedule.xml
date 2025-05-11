@@ -15,7 +15,7 @@
         android:scaleType="centerCrop"
         android:alpha="0.2" />
 
-    <!-- קובץ עליון עם לוגו ותמונה נוספת -->
+    <!-- כותרת עליונה -->
     <RelativeLayout
         android:id="@+id/headerLayout"
         android:layout_width="match_parent"
@@ -23,16 +23,14 @@
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp">
 
-        <!-- תמונה בצד שמאל -->
         <ImageView
             android:id="@+id/logoImage"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:src="@drawable/logo"
             android:layout_alignParentStart="true"
-            android:layout_marginStart="10dp"/>
+            android:layout_marginStart="10dp" />
 
-        <!-- טקסט כותרת ממורכז לשורה כולה -->
         <TextView
             android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
@@ -41,22 +39,36 @@
             android:textSize="22sp"
             android:textStyle="bold"
             android:textColor="#000000"
-            android:layout_centerInParent="true"/>
+            android:layout_centerInParent="true" />
     </RelativeLayout>
 
-
-
-    <!-- לוח שנה בעברית -->
+    <!-- לוח שנה -->
     <CalendarView
         android:id="@+id/calendarView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/headerLayout"
         android:firstDayOfWeek="1"
+        android:layoutDirection="rtl"
         android:dateTextAppearance="@style/CalendarDateAppearance"
-        android:weekDayTextAppearance="@style/CalendarWeekDayAppearance"/>
+        android:weekDayTextAppearance="@style/CalendarWeekDayAppearance" />
 
-    <!-- רשימת המדריכים לכל יום -->
+    <!-- שעות החוג -->
+    <TextView
+        android:id="@+id/tvSchedule"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="שעות החוג:"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_below="@id/calendarView"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="16dp"
+        android:layout_alignParentRight="true"
+        android:layoutDirection="rtl"
+        android:textDirection="rtl" />
+
+    <!-- רשימת מדריכים -->
     <TextView
         android:id="@+id/tvInstructorsLabel"
         android:layout_width="wrap_content"
@@ -64,27 +76,27 @@
         android:text="מדריכים בתאריך זה:"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:layout_below="@id/calendarView"
+        android:layout_below="@id/tvSchedule"
         android:layout_marginTop="10dp"
         android:layout_marginLeft="16dp"
-        android:layout_alignParentRight="true"/>
+        android:layout_alignParentRight="true"
+        android:layoutDirection="rtl"
+        android:textDirection="rtl" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvInstructors"
         android:layout_width="match_parent"
         android:layout_height="120dp"
         android:layout_below="@id/tvInstructorsLabel"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_margin="10dp"
         android:layoutDirection="rtl"
         android:textDirection="rtl"
+        android:overScrollMode="always"
+        android:scrollbars="vertical"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/item_guide_for_show_schedule"
-        />
+        tools:listitem="@layout/item_guide_for_show_schedule" />
 
-    <!-- רשימת החניכים לכל יום -->
+    <!-- רשימת חניכים -->
     <TextView
         android:id="@+id/tvStudentsLabel"
         android:layout_width="wrap_content"
@@ -96,7 +108,8 @@
         android:layout_marginTop="10dp"
         android:layout_marginLeft="16dp"
         android:layout_alignParentRight="true"
-        />
+        android:layoutDirection="rtl"
+        android:textDirection="rtl" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvStudents"
@@ -104,10 +117,12 @@
         android:layout_height="120dp"
         android:layout_below="@id/tvStudentsLabel"
         android:layout_margin="10dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/item_student_for_show_schedule"
         android:layoutDirection="rtl"
         android:textDirection="rtl"
-        />
+        android:overScrollMode="always"
+        android:scrollbars="vertical"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/item_student_for_show_schedule" />
+
 
 </RelativeLayout>
