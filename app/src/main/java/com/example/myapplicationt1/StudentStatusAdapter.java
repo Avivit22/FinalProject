@@ -1,0 +1,105 @@
+package com.example.myapplicationt1;
+
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.List;
+
+public class StudentStatusAdapter extends RecyclerView.Adapter<StudentStatusAdapter.StatusViewHolder> {
+
+    private final List<StudentStatus> studentStatuses;
+
+    public StudentStatusAdapter(List<StudentStatus> studentStatuses) {
+        this.studentStatuses = studentStatuses;
+    }
+
+    @NonNull
+    @Override
+    public StatusViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_student_status, parent, false);
+        return new StatusViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull StatusViewHolder holder, int position) {
+        StudentStatus status = studentStatuses.get(position);
+        holder.bind(status);
+    }
+
+    @Override
+    public int getItemCount() {
+        return studentStatuses.size();
+    }
+
+    public List<StudentStatus> collectStatuses() {
+        return studentStatuses;
+    }
+
+    public static class StatusViewHolder extends RecyclerView.ViewHolder {
+
+        TextView tvStudentName;
+        RadioGroup rgAttendanceStatus;
+        RadioButton rbPresent, rbAbsent, rbReplacement;
+        CheckBox cbToran;
+        EditText etNotes;
+
+        public StatusViewHolder(@NonNull View itemView) {
+            super(itemView);
+            tvStudentName = itemView.findViewById(R.id.tvStudentName);
+            rgAttendanceStatus = itemView.findViewById(R.id.rgAttendanceStatus);
+            rbPresent = itemView.findViewById(R.id.rbPresent);
+            rbAbsent = itemView.findViewById(R.id.rbAbsent);
+            rbReplacement = itemView.findViewById(R.id.rbReplacement);
+            cbToran = itemView.findViewById(R.id.cbToran);
+            etNotes = itemView.findViewById(R.id.etNotes);
+        }
+
+        public void bind(StudentStatus status) {
+            tvStudentName.setText(status.getStudentName());
+
+            // Restore selection
+            switch (status.getStatus()) {
+                case "נוכח": rbPresent.setChecked(true); break;
+                case "חיסור": rbAbsent.setChecked(true); break;
+                case "השלמה": rbReplacement.setChecked(true); break;
+            }
+
+            cbToran.setChecked(status.isToran());
+            etNotes.setText(status.getNotes());
+
+            // Listeners
+            rgAttendanceStatus.setOnCheckedChangeListener((group, checkedId) -> {
+                if (checkedId == rbPresent.getId()) status.setStatus("נוכח");
+                else if (checkedId == rbAbsent.getId()) status.setStatus("חיסור");
+                else if (checkedId == rbReplacement.getId()) status.setStatus("השלמה");
+            });
+
+            cbToran.setOnCheckedChangeListener((v, isChecked) -> status.setToran(isChecked));
+
+            etNotes.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    status.setNotes(s.toString()); // כל שינוי מתעדכן מיד במודל
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {}
+            });
+
+        }
+    }
+}

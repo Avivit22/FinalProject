@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <!-- תמונת רקע -->
     <ImageView
@@ -93,270 +94,24 @@
 
 
 
-    <!-- רשימת חניכים -->
-    <LinearLayout
-        android:id="@+id/studentsList"
+    <!-- רשימת החניכים בגלילה -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/studentsScroll"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_below="@id/searchLayout"
-        android:orientation="vertical">
+        android:layout_above="@id/saveButton"
+        android:layout_margin="12dp"
+        android:fillViewport="true">
 
-        <!-- חניך 1 -->
-        <LinearLayout
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvStudentsStatus"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="8dp"
-            android:background="#FFFFFF"
-            android:elevation="4dp"
-            android:layout_marginBottom="12dp">
-
-            <!-- שם חניך -->
-            <TextView
-                android:id="@+id/studentNameNathan"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="נתן כהן"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="#000000"
-                android:layout_gravity="right"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                />
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"
-                android:layout_marginTop="5dp">
-
-                <!-- "תורן" מיושר לשמאל -->
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="start"
-                    android:layoutDirection="rtl">
-
-                    <CheckBox
-                        android:id="@+id/btntoranOriT"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="תורן"
-                        android:textSize="16sp"
-                        android:layout_marginRight="60dp"/>
-                </LinearLayout>
-
-                <!-- קבוצה של נוכחות - מיושר לימין -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="horizontal"
-                    android:gravity="end"
-                    android:layoutDirection="rtl">
-
-                    <RadioGroup
-                        android:id="@+id/attendanceGroupNatan"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <RadioButton
-                            android:id="@+id/NatanN"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="נוכח"
-                            android:textSize="16sp"
-                            android:layout_marginLeft="10dp"/>
-
-                        <RadioButton
-                            android:id="@+id/NatanH"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="חיסור"
-                            android:textSize="16sp"
-                            android:layout_marginLeft="10dp"/>
-
-                        <RadioButton
-                            android:id="@+id/NatanHash"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="השלמה"
-                            android:textSize="16sp"/>
-                    </RadioGroup>
-                </LinearLayout>
-
-
-            </LinearLayout>
-
-
-
-            <!-- פרטי חניך + הערות באותה שורה -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginTop="8dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginLeft="10dp">
-
-
-                <!-- כפתור פרטי חניך -->
-                <Button
-                    android:id="@+id/detailsNathan"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="פרטי חניך"
-                    android:textSize="14sp"
-                    android:layout_marginEnd="16dp"
-                    android:backgroundTint="#7387CEEB"
-                    android:textColor="#000000"/>
-
-                <!-- תיבת טקסט להערות -->
-                <EditText
-                    android:id="@+id/notesNathan"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="הערות"
-                    android:background="#E8E8E8"
-                    android:padding="8dp"/>
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <!-- חניך 2 - אורי לוי -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="8dp"
-            android:background="#FFFFFF"
-            android:elevation="4dp"
-            android:layout_marginBottom="12dp">
-
-            <!-- שם חניך -->
-            <TextView
-                android:id="@+id/studentNameOri"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="אורי לוי"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="#000000"
-                android:layout_gravity="right"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"/>
-
-            <!-- אפשרויות נוכחות -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"
-                android:layout_marginTop="5dp">
-
-                <!-- "תורן" מיושר לשמאל -->
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="start"
-                    android:layoutDirection="rtl">
-
-                    <CheckBox
-                        android:id="@+id/btntoranOri"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="תורן"
-                        android:textSize="16sp"
-                        android:layout_marginRight="60dp"/>
-                </LinearLayout>
-
-                <!-- קבוצה של נוכחות - מיושר לימין -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="horizontal"
-                    android:gravity="end"
-                    android:layoutDirection="rtl">
-
-                    <RadioGroup
-                        android:id="@+id/attendanceGroupOri"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <RadioButton
-                            android:id="@+id/OriN"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="נוכח"
-                            android:textSize="16sp"
-                            android:layout_marginLeft="10dp"/>
-
-                        <RadioButton
-                            android:id="@+id/OriH"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="חיסור"
-                            android:textSize="16sp"
-                            android:layout_marginLeft="10dp"/>
-
-                        <RadioButton
-                            android:id="@+id/OriHash"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="השלמה"
-                            android:textSize="16sp"/>
-                    </RadioGroup>
-                </LinearLayout>
-
-
-            </LinearLayout>
-
-
-            <!-- פרטי חניך + הערות -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginTop="8dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginLeft="10dp">
-
-                <!-- כפתור פרטי חניך -->
-                <Button
-                    android:id="@+id/detailsOri"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="פרטי חניך"
-                    android:textSize="14sp"
-                    android:layout_marginEnd="16dp"
-                    android:backgroundTint="#7387CEEB"
-                    android:textColor="#000000"/>
-
-                <!-- תיבת טקסט להערות -->
-                <EditText
-                    android:id="@+id/notesOri"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="הערות"
-                    android:background="#E8E8E8"
-                    android:padding="8dp"/>
-            </LinearLayout>
-        </LinearLayout>
-    </LinearLayout>
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"
+            android:overScrollMode="never"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+    </androidx.core.widget.NestedScrollView>
 
 
     <!-- כפתור שמור -->
