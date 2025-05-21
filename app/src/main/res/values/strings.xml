@@ -31,6 +31,19 @@
     <string name="dayofweek_student">יום החוג:</string>
     <string name="grade">כיתה:</string>
     <string name="convert_to_guide">המרה למדריך</string>
+    <string name="username">שם משתמש</string>
+    <string name="password">סיסמא</string>
+    <string name="sign_in_guide">התחבר כמדריך</string>
+    <string name="sign_in_manager">התחבר כמנהל</string>
+    <string name="forgot_password">שכחתי סיסמא</string>
+    <string name="day_to_arrive">יום בשבוע בו יגיע לחוג</string>
+    <string name="phone_number">מספר טלפון נייד</string>
+    <string name="phone_ofparent">מספר טלפון נייד של אחד ההורים</string>
+    <string name="select_photo">בחר תמונה</string>
+    <string name="add_to_system">הוספה למערכת</string>
+    <string name="add_new_student_to_system">הוספת חניך חדש למערכת</string>
+    <string name="add_new_guide_to_system">הוספת מדריך חדש למערכת</string>
+    <string name="day_for_guide">יום בשבוע בו מדריך</string>
     <string-array name="days_of_week">
         <item>ראשון</item>
         <item>שני</item>

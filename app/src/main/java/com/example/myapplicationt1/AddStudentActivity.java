@@ -354,12 +354,9 @@ public class AddStudentActivity extends AppCompatActivity {
     private EditText fullNameInput, activeNumberInput, gradeInput, phoneInput, addressInput, parent1Input, parent2Input, parentPhoneInput;
     private Spinner genderSpinner, dayOfWeekSpinner;
     private FirebaseFirestore db;
-    // אין צורך במשתני Storage
-    // private FirebaseStorage storage;
-    // private StorageReference storageRootReference;
     private static final int PICK_IMAGE_REQUEST = 1;
-    private Uri imageUri; // URI של התמונה מהגלריה, נשתמש בו כדי לקבל Bitmap
-    private Bitmap currentProfileBitmap = null; // *** תוספת: לשמור את ה-Bitmap הנבחר ***
+    private Uri imageUri;
+    private Bitmap currentProfileBitmap = null;
     private static final String TAG = "AddStudentActivity";
 
     @Override
@@ -370,9 +367,6 @@ public class AddStudentActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate started");
 
         db = FirebaseFirestore.getInstance();
-        // אין צורך לאתחל Storage
-        // storage = FirebaseStorage.getInstance();
-        // storageRootReference = storage.getReference();
 
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             Log.i(TAG, "User is authenticated: " + FirebaseAuth.getInstance().getCurrentUser().getUid());
@@ -435,17 +429,17 @@ public class AddStudentActivity extends AppCompatActivity {
                 Log.w(TAG, "Validation failed: Dates not selected.");
                 return;
             }
-            // אין צורך לבדוק imageUri כאן, הבדיקה תהיה ב-saveStudentDataToFirestore
+
 
             addButton.setEnabled(false);
             Log.d(TAG, "Proceeding to saveStudentDataToFirestore with Base64 image");
-            // *** שינוי: קוראים ישירות לפונקציה ששומרת ב-Firestore עם ה-Bitmap ***
+
             saveStudentDataToFirestore(currentProfileBitmap);
         });
         Log.d(TAG, "onCreate finished");
     }
 
-    // *** שינוי: הפונקציה מקבלת Bitmap וממירה ל-Base64 ***
+
     private void saveStudentDataToFirestore(Bitmap profileBitmapToSave) {
         Log.d(TAG, "saveStudentDataToFirestore called.");
 
@@ -476,20 +470,17 @@ public class AddStudentActivity extends AppCompatActivity {
         studentData.put("birthDate", birthDateVal);
         studentData.put("joinDate", joinDateVal);
 
-        String base64Image = ""; // ברירת מחדל אם אין תמונה או יש שגיאה
+        String base64Image = "";
         if (profileBitmapToSave != null) {
             try {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                // --- כיווץ התמונה ---
-                // נסי להתאים את הערכים האלה. איכות נמוכה יותר = קובץ קטן יותר.
-                // כדאי גם לשקול הקטנת רזולוציה (שינוי גודל ה-Bitmap) לפני הדחיסה.
-                int quality = 60; // התחילי עם ערך נמוך יחסית לבדיקה
+
+                int quality = 60;
                 profileBitmapToSave.compress(Bitmap.CompressFormat.JPEG, quality, baos);
                 byte[] imageBytes = baos.toByteArray();
 
-                // בדיקה גסה לגודל מקסימלי (למשל, ~500KB לפני Base64, שיהפוך לכ ~665KB אחרי)
-                // המגבלה של Firestore היא 1MB לכל המסמך!
-                int maxSizeBytesBeforeEncoding = 500 * 1024; // 500KB
+
+                int maxSizeBytesBeforeEncoding = 500 * 1024;
                 if (imageBytes.length < maxSizeBytesBeforeEncoding) {
                     base64Image = Base64.encodeToString(imageBytes, Base64.DEFAULT);
                     Log.d(TAG, "Base64 image string created. Length: " + base64Image.length());
@@ -504,9 +495,9 @@ public class AddStudentActivity extends AppCompatActivity {
         } else {
             Log.d(TAG, "No profile bitmap to save.");
         }
-        studentData.put("profileImageBase64", base64Image); // שדה לשמירת התמונה כ-Base64
+        studentData.put("profileImageBase64", base64Image);
 
-        Log.i(TAG, "Attempting to save student data to Firestore: " + studentData.toString().substring(0, Math.min(studentData.toString().length(), 300)) + "..."); // הדפסה חלקית למניעת Log ארוך מדי
+        Log.i(TAG, "Attempting to save student data to Firestore: " + studentData.toString().substring(0, Math.min(studentData.toString().length(), 300)) + "...");
 
         db.collection("students")
                 .add(studentData)
@@ -555,26 +546,26 @@ public class AddStudentActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Log.d(TAG, "onActivityResult called. RequestCode: " + requestCode + ", ResultCode: " + resultCode);
-        currentProfileBitmap = null; // איפוס לפני כל בחירה
-        imageUri = null; // איפוס ה-URI גם
+        currentProfileBitmap = null;
+        imageUri = null;
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             imageUri = data.getData();
             Log.i(TAG, "Image selected from gallery. URI: " + imageUri.toString());
             try {
-                // המרה ל-Bitmap מייד לאחר הבחירה
+
                 currentProfileBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
-                profileImage.setImageBitmap(currentProfileBitmap); // הצגת התמונה שנבחרה
+                profileImage.setImageBitmap(currentProfileBitmap);
                 Log.d(TAG, "Bitmap created and set to ImageView.");
             } catch (IOException e) {
                 Log.e(TAG, "IOException when loading bitmap from URI: " + e.getMessage(), e);
                 Toast.makeText(this, "שגיאה בהצגת התמונה שנבחרה", Toast.LENGTH_SHORT).show();
-                currentProfileBitmap = null; // איפוס אם יש שגיאה
+                currentProfileBitmap = null;
                 imageUri = null;
             }
         } else {
             Log.w(TAG, "Image selection was cancelled or failed. ResultCode: " + resultCode);
-            profileImage.setImageResource(R.drawable.default_profile); // החזרת תמונת ברירת מחדל אם הבחירה בוטלה
+            profileImage.setImageResource(R.drawable.default_profile);
         }
     }
 }

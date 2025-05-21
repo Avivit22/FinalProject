@@ -46,7 +46,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp"
-        android:text="הוספת חניך חדש למערכת"
+        android:text="@string/add_new_student_to_system"
         android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="#000000" />
@@ -70,7 +70,7 @@
                 android:id="@+id/fullNameInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="שם מלא"
+                android:hint="@string/fullname"
                 android:inputType="textPersonName"
                 android:layout_gravity="end"
                 android:layout_marginBottom="5dp"/>
@@ -80,7 +80,7 @@
                 android:id="@+id/activeNumberInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="מספר פעיל"
+                android:hint="@string/activenumber"
                 android:inputType="number"
                 android:layout_marginBottom="5dp"
                 />
@@ -110,7 +110,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="מגדר"
+                    android:text="@string/gender"
                     android:gravity="center_vertical"
                     android:textSize="16dp"
                     android:layout_marginEnd="8dp"/>
@@ -143,7 +143,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="תאריך לידה"
+                    android:text="@string/birthdate"
                     android:gravity="center_vertical"
                     android:textSize="16dp"/>
             </LinearLayout>
@@ -173,7 +173,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="יום בשבוע בו יגיע לחוג"
+                    android:text="@string/day_to_arrive"
                     android:gravity="center_vertical"
                     android:textSize="16dp"
                     android:layout_marginEnd="8dp"/>
@@ -186,20 +186,19 @@
                 android:id="@+id/grade"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="כיתה"
+                android:hint="@string/grade"
                 android:gravity="end"
                 android:layout_marginBottom="5dp"
                 android:layout_gravity="end"
                 android:textAlignment="viewEnd"
                 />
 
-
             <!-- מספר טלפון חניך -->
             <EditText
                 android:id="@+id/phoneInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="מספר טלפון נייד"
+                android:hint="@string/phone_number"
                 android:inputType="phone"
                 android:gravity="end"
                 android:layout_marginBottom="5dp"/>
@@ -217,7 +216,7 @@
                     android:id="@+id/joinDateButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="בחר תאריך"
+                    android:text="@string/choose_date"
                     android:backgroundTint="#7387CEEB"
                     android:textColor="#000000"/>
 
@@ -229,7 +228,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="תאריך הצטרפות"
+                    android:text="@string/joindate"
                     android:gravity="center_vertical"
                     android:textSize="16dp"/>
             </LinearLayout>
@@ -239,7 +238,7 @@
                 android:id="@+id/addressInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="כתובת"
+                android:hint="@string/address"
                 android:inputType="textPostalAddress"
                 android:layout_marginBottom="5dp"/>
 
@@ -248,7 +247,7 @@
                 android:id="@+id/parent1NameInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="שם הורה 1"
+                android:hint="@string/parent1name"
                 android:inputType="textPersonName"
                 android:layout_marginBottom="5dp"/>
 
@@ -256,7 +255,7 @@
                 android:id="@+id/parent2NameInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="שם הורה 2"
+                android:hint="@string/parent2name"
                 android:inputType="textPersonName"
                 android:layout_marginBottom="5dp"/>
 
@@ -265,7 +264,7 @@
                 android:id="@+id/parentPhoneInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="מספר טלפון נייד של אחד ההורים"
+                android:hint="@string/phone_ofparent"
                 android:inputType="phone"
                 android:gravity="end"
                 android:layout_marginBottom="5dp"/>
@@ -293,7 +292,7 @@
                     android:id="@+id/uploadImageButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="בחר תמונה"
+                    android:text="@string/select_photo"
                     android:backgroundTint="#7387CEEB"
                     android:textColor="#000000"/>
             </LinearLayout>
@@ -305,7 +304,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="הוספה למערכת"
+                android:text="@string/add_to_system"
                 android:backgroundTint="#004FAA" />
         </LinearLayout>
     </ScrollView>
