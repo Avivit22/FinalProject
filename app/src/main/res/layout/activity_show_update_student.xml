@@ -36,14 +36,14 @@
             android:layout_weight="1" />
     </LinearLayout>
 
-    <!-- טקסט כותרת -->
+    <!-- טקסט כותרת לצפייה ועדכון פרטי חניך -->
     <TextView
         android:id="@+id/titleText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp"
-        android:text="צפייה ועדכון פרטי חניך"
+        android:text="@string/view_update_student_details"
         android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="#000000" />
@@ -65,7 +65,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="חיפוש שם חניך"
+            android:hint="@string/search_studentname"
             android:textSize="18sp"
             android:textColor="#000000"
             android:textColorHint="#A9A9A9"
@@ -80,7 +80,7 @@
         android:layout_height="match_parent"
         android:layout_below="@id/searchLayout"
         android:layout_marginTop="15dp"
-        android:visibility="gone">  <!-- התחל מוסתר -->
+        android:visibility="gone">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -88,7 +88,6 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- קונטיינר להצגת תמונה וכפתור באותה שורה -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -96,11 +95,12 @@
                 android:gravity="center_vertical|end"
                 android:layout_marginBottom="20dp">
 
+                <!-- שנה תמונה-->
                 <Button
                     android:id="@+id/uploadImageButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="שנה תמונה"
+                    android:text="@string/changephoto"
                     android:backgroundTint="#7387CEEB"
                     android:textColor="#000000"
                     android:layout_marginStart="16dp"/>
@@ -115,16 +115,19 @@
                     android:background="#E0E0E0" />
             </LinearLayout>
 
+            <!-- שם מלא -->
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="end" android:layout_marginBottom="15dp">
                 <EditText android:id="@+id/fullNameEditText" android:layout_width="wrap_content" android:minWidth="150dp" android:layout_height="wrap_content" android:text="" android:textSize="18sp" android:gravity="end"/>
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="שם מלא: " android:textSize="18sp" android:textStyle="bold" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/fullname" android:textSize="18sp" android:textStyle="bold" />
             </LinearLayout>
 
+            <!-- מספר פעיל -->
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="end" android:layout_marginBottom="15dp">
                 <EditText android:id="@+id/organizationIdEditText" android:layout_width="wrap_content" android:minWidth="150dp" android:layout_height="wrap_content" android:text="" android:textSize="18sp" android:gravity="end"/>
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="מספר פעיל: " android:textSize="18sp" android:textStyle="bold" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/activenumber" android:textSize="18sp" android:textStyle="bold" />
             </LinearLayout>
 
+            <!-- מגדר -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -132,19 +135,21 @@
                 android:gravity="end"
                 android:layout_marginBottom="15dp">
                 <Spinner android:id="@+id/genderSpinner" android:layout_width="wrap_content" android:layout_height="wrap_content" android:entries="@array/gender_options" android:spinnerMode="dropdown"/>
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="מגדר: " android:textSize="18sp" android:textStyle="bold" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/gender" android:textSize="18sp" android:textStyle="bold" />
             </LinearLayout>
 
+            <!--תאריך לידה -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="end"
                 android:layout_marginBottom="15dp">
-                <EditText android:id="@+id/birthDateEditText" android:layout_width="wrap_content" android:minWidth="150dp" android:layout_height="wrap_content" android:hint="בחר תאריך" android:textSize="18sp" android:focusable="false" android:clickable="true" android:gravity="end"/>
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="תאריך לידה: " android:textSize="18sp" android:textStyle="bold" />
+                <EditText android:id="@+id/birthDateEditText" android:layout_width="wrap_content" android:minWidth="150dp" android:layout_height="wrap_content" android:hint="@string/choose_date" android:textSize="18sp" android:focusable="false" android:clickable="true" android:gravity="end"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/birthdate" android:textSize="18sp" android:textStyle="bold" />
             </LinearLayout>
 
+            <!-- יום החוג -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -152,56 +157,64 @@
                 android:gravity="end"
                 android:layout_marginBottom="15dp">
                 <Spinner android:id="@+id/dayOfWeekSpinner" android:layout_width="wrap_content" android:layout_height="wrap_content" android:entries="@array/days_of_week" android:spinnerMode="dropdown"/>
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="יום בחוג: " android:textSize="18sp" android:textStyle="bold" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/dayofweek_student" android:textSize="18sp" android:textStyle="bold" />
             </LinearLayout>
 
+            <!-- כיתה -->
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="end" android:layout_marginBottom="15dp">
                 <EditText android:id="@+id/gradeEditText" android:layout_width="wrap_content" android:minWidth="150dp" android:layout_height="wrap_content" android:text="" android:textSize="18sp" android:gravity="end"/>
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="כיתה: " android:textSize="18sp" android:textStyle="bold" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/grade" android:textSize="18sp" android:textStyle="bold" />
             </LinearLayout>
 
+            <!-- נייד חניך -->
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="end" android:layout_marginBottom="15dp">
                 <EditText android:id="@+id/phoneEditText" android:layout_width="wrap_content" android:minWidth="150dp" android:layout_height="wrap_content" android:text="" android:textSize="18sp" android:inputType="phone" android:gravity="end"/>
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="טלפון: " android:textSize="18sp" android:textStyle="bold" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/phone" android:textSize="18sp" android:textStyle="bold" />
             </LinearLayout>
 
+            <!-- תאריך הצטרפות -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="end"
                 android:layout_marginBottom="15dp">
-                <EditText android:id="@+id/joinDateEditText" android:layout_width="wrap_content" android:minWidth="150dp" android:layout_height="wrap_content" android:hint="בחר תאריך" android:textSize="18sp" android:focusable="false" android:clickable="true" android:gravity="end"/>
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="ת.הצטרפות: " android:textSize="18sp" android:textStyle="bold" />
+                <EditText android:id="@+id/joinDateEditText" android:layout_width="wrap_content" android:minWidth="150dp" android:layout_height="wrap_content" android:hint="@string/choose_date" android:textSize="18sp" android:focusable="false" android:clickable="true" android:gravity="end"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/joindate" android:textSize="18sp" android:textStyle="bold" />
             </LinearLayout>
 
+            <!-- כתובת -->
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="end" android:layout_marginBottom="15dp">
                 <EditText android:id="@+id/addressEditText" android:layout_width="wrap_content" android:minWidth="150dp" android:layout_height="wrap_content" android:text="" android:textSize="18sp" android:gravity="end"/>
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="כתובת: " android:textSize="18sp" android:textStyle="bold" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/address" android:textSize="18sp" android:textStyle="bold" />
             </LinearLayout>
 
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="end" android:layout_marginBottom="15dp">
+            <!-- שם הורה 1 -->
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="end" android:layout_marginBottom="15dp" >
                 <EditText android:id="@+id/parent1NameEditText" android:layout_width="wrap_content" android:minWidth="150dp" android:layout_height="wrap_content" android:text="" android:textSize="18sp" android:gravity="end"/>
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="שם הורה 1: " android:textSize="18sp" android:textStyle="bold" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/parent1name" android:textSize="18sp" android:textStyle="bold" />
             </LinearLayout>
 
+            <!-- שם הורה 2 -->
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="end" android:layout_marginBottom="15dp">
                 <EditText android:id="@+id/parent2NameEditText" android:layout_width="wrap_content" android:minWidth="150dp" android:layout_height="wrap_content" android:text="" android:textSize="18sp" android:gravity="end"/>
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="שם הורה 2: " android:textSize="18sp" android:textStyle="bold" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/parent2name" android:textSize="18sp" android:textStyle="bold" />
             </LinearLayout>
 
+            <!-- טלפון הורים -->
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="end" android:layout_marginBottom="15dp">
                 <EditText android:id="@+id/parentPhoneEditText" android:layout_width="wrap_content" android:minWidth="150dp" android:layout_height="wrap_content" android:text="" android:textSize="18sp" android:inputType="phone" android:gravity="end"/>
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="טלפון הורים: " android:textSize="18sp" android:textStyle="bold" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/parentphone" android:textSize="18sp" android:textStyle="bold" />
             </LinearLayout>
 
+            <!-- כפתור שמור שינויים -->
             <Button
                 android:id="@+id/saveChangesButton"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"
-                android:text="שמור שינויים"
+                android:text="@string/save_changes"
                 android:backgroundTint="#004FAA"
                 android:textSize="18sp"/>
 
@@ -211,24 +224,28 @@
                 android:orientation="horizontal"
                 android:gravity="center"
                 android:layout_marginTop="16dp">
+
+                <!--כפתור מחיקה מהאפליקציה -->
                 <Button
                     android:id="@+id/deleteStudentButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="מחיקה מהמערכת"
+                    android:text="@string/leaving_date"
                     android:backgroundTint="#39AA0022"
                     android:textSize="14sp"
                     android:textColor="#000000"/>
                 <Space
                     android:layout_width="16dp"
                     android:layout_height="wrap_content" />
+
+                <!-- המרה למדריך -->
                 <Button
                     android:id="@+id/convertToGuideButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="המרה למדריך"
+                    android:text="@string/convert_to_guide"
                     android:backgroundTint="#A8DAEE"
                     android:textSize="14sp"
                     android:textColor="#000000"/>

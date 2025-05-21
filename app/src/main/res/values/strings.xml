@@ -8,7 +8,29 @@
     </string-array>
 
     <string name="select_day_of_week">יום בשבוע</string>
-    <string name="choosedate">בחר תאריך</string>
+    <string name="view_update_guide_details">צפייה ועדכון פרטי מדריך</string>
+    <string name="search_guidename">חיפוש שם מדריך</string>
+    <string name="changephoto">שנה תמונה</string>
+    <string name="fullname">שם מלא:</string>
+    <string name="activenumber">מספר פעיל:</string>
+    <string name="email">אימייל:</string>
+    <string name="gender">מגדר:</string>
+    <string name="birthdate">תאריך לידה:</string>
+    <string name="choose_date">בחר תאריך</string>
+    <string name="dayofweekguide">יום הדרכה:</string>
+    <string name="phone">טלפון:</string>
+    <string name="joindate">ת.הצטרפות:</string>
+    <string name="address">כתובת:</string>
+    <string name="parent1name">שם הורה 1:</string>
+    <string name="parent2name">שם הורה 2:</string>
+    <string name="parentphone">טלפון הורים:</string>
+    <string name="save_changes">שמור שינויים</string>
+    <string name="leaving_date">הגדר תאריך עזיבה</string>
+    <string name="view_update_student_details">צפייה ועדכון פרטי חניך</string>
+    <string name="search_studentname">חיפוש שם חניך</string>
+    <string name="dayofweek_student">יום החוג:</string>
+    <string name="grade">כיתה:</string>
+    <string name="convert_to_guide">המרה למדריך</string>
     <string-array name="days_of_week">
         <item>ראשון</item>
         <item>שני</item>

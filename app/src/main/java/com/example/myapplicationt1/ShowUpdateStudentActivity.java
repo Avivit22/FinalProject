@@ -50,62 +50,57 @@ import java.util.Map;
 
 public class ShowUpdateStudentActivity extends AppCompatActivity {
 
-    private static final String TAG = "ShowUpdateStudent";
+    private static final String TAG = "ShowUpdateStudent";  //תג עבור לוגים- עוזר לזהות מאיזו מחלקה הודעות הלוג הגיעו
+
+    //גישה לשירותי FIREBASE
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
 
-    private AutoCompleteTextView searchStudentAutoComplete;
-    //private Button searchButton;
-    private ScrollView detailsScrollView;
+    private AutoCompleteTextView searchStudentAutoComplete; //רכיב UI
+    private ScrollView detailsScrollView;  //רכיב UI
 
-    // ודאי שהשמות כאן תואמים ל-IDים שהגדרת ב-initializeUI
+    //שדות קלט לעריכת פרטי חניך
     private EditText fullNameEditText, organizationIdEditText, birthDateEditText,
             gradeEditText, phoneEditText, joinDateEditText, addressEditText,
             parent1NameEditText, parent2NameEditText, parentPhoneEditText;
-    private Spinner genderSpinner, dayOfWeekSpinner;
-    private ImageView profileImage;
+    private Spinner genderSpinner, dayOfWeekSpinner; //ספינרים לבחירת מגדר ויום חוג
+    private ImageView profileImage; //תמונת חניך
     private Button uploadImageButton, saveChangesButton, deleteStudentButton, convertToGuideButton;
 
+    //משתניפ לניהול תמונת חניך
     private Uri newImageUri = null;
     private Bitmap currentProfileBitmap = null;
-    private String currentStudentDocumentId = null;
-    private Student currentStudent = null; // האובייקט שיחזיק את נתוני החניך
 
+    //משתנים לזיהוי וניהול חניך
+    private String currentStudentDocumentId = null; //מזהה מסמך של חניך הFIRESTORE
+    private Student currentStudent = null; //פרטי חניך ספציפי
+
+    //טיפול בבחירת תמונה מהגלריה
     private final ActivityResultLauncher<Intent> imagePickerLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                     result -> {
-                        if (result.getResultCode() == RESULT_OK && result.getData() != null && result.getData().getData() != null) {
-                            newImageUri = result.getData().getData();
+                        if (result.getResultCode() == RESULT_OK && result.getData() != null && result.getData().getData() != null) {  //בדיקה את המשתמש בחר תמונה והבחירה בוצעה בהצלחה
+                            Uri selectedImageUri = result.getData().getData(); //קבלת URI של התמונה שנבחרה
                             try {
-                                currentProfileBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), newImageUri);
-                                profileImage.setImageBitmap(currentProfileBitmap);
-                                Log.d(TAG, "New image selected and bitmap created.");
-                            } catch (IOException e) {
+                                Bitmap selectedBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImageUri);
+                                profileImage.setImageBitmap(selectedBitmap);
+                                newImageUri = selectedImageUri; //שמירת URI של התמונה החדשה
+                                currentProfileBitmap = selectedBitmap;
+                                Log.d(TAG, "New image selected and bitmap created."); //רישום ללוג
+                            } catch (IOException e) {  //טיפול בשגיאה אם טעינת התמונה נכשלה
                                 Log.e(TAG, "Error loading new image bitmap", e);
                                 Toast.makeText(this, "שגיאה בטעינת תמונה חדשה", Toast.LENGTH_SHORT).show();
-                                newImageUri = null;
-                                currentProfileBitmap = null; // איפוס אם הייתה שגיאה בטעינת החדשה
-                                // החזרת התמונה הקודמת אם הייתה
-                                // *** שינוי כאן: שימוש ב-getProfileImageBase64() ***
+                                newImageUri = null; //איפוס משתנה אם טעינת התמונה נכשלה
+                                currentProfileBitmap = null;
                                 if (currentStudent != null && currentStudent.getProfileImageBase64() != null && !currentStudent.getProfileImageBase64().isEmpty()){
                                     loadBase64Image(currentStudent.getProfileImageBase64(), profileImage);
-                                } else {
+                                } else { //אם לא הייתה תמונה קודמת, מנקים תצוגה ומאפסים את BITMAP
                                     profileImage.setImageBitmap(null);
+                                    currentProfileBitmap = null;
                                 }
                             }
-                        } else {
+                        } else { //אם המשתמש ביטל את בחירת התמונה או שהבחירה נכשלה
                             Log.d(TAG, "New image selection cancelled or failed.");
-                            newImageUri = null; // ודאי שגם פה מאפסים את newImageUri
-                            // השארת התמונה הנוכחית (שנטענה מ-Firestore או הייתה קיימת לפני כן)
-                            // או ניקוי אם לא הייתה תמונה קודמת
-                            if (currentProfileBitmap != null) { // אם currentProfileBitmap מכיל את התמונה הישנה (או חדשה שנטענה קודם)
-                                profileImage.setImageBitmap(currentProfileBitmap);
-                            } else if (currentStudent != null && currentStudent.getProfileImageBase64() != null && !currentStudent.getProfileImageBase64().isEmpty()){
-                                // *** שינוי כאן: שימוש ב-getProfileImageBase64() ***
-                                loadBase64Image(currentStudent.getProfileImageBase64(), profileImage);
-                            } else {
-                                profileImage.setImageBitmap(null);
-                            }
                         }
                     });
 
@@ -113,23 +108,23 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_show_update_student);
+        setContentView(R.layout.activity_show_update_student); //טעינת קובץ XML
 
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
-        initializeUI();
-        setupListeners();
-        loadStudentNamesForAutoComplete();
+        initializeUI(); //אתחול רכיבי UI
+        setupListeners();  //הגדרת מאזינים לאירועים
+        loadStudentNamesForAutoComplete(); //טעינת שמות חניכים לשדה החיפוש
     }
 
+    //פונקציה לאתחול כל רכיבי הUI שמוגדרים בקובץ הXML
     private void initializeUI() {
         searchStudentAutoComplete = findViewById(R.id.search_student);
-        //searchButton = findViewById(R.id.searchButton);
         detailsScrollView = findViewById(R.id.detailsScrollView);
 
         fullNameEditText = findViewById(R.id.fullNameEditText);
-        organizationIdEditText = findViewById(R.id.organizationIdEditText); // זה צריך להתאים ל-activeNumber ב-Student
+        organizationIdEditText = findViewById(R.id.organizationIdEditText);
         birthDateEditText = findViewById(R.id.birthDateEditText);
         gradeEditText = findViewById(R.id.gradeEditText);
         phoneEditText = findViewById(R.id.phoneEditText);
@@ -147,10 +142,11 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
         deleteStudentButton = findViewById(R.id.deleteStudentButton);
         convertToGuideButton = findViewById(R.id.convertToGuideButton);
 
-        detailsScrollView.setVisibility(View.GONE);
-        clearStudentDetailsForm();
+        detailsScrollView.setVisibility(View.GONE);  //בפתיחת המסך החלק בו מוצגים פרטי החניך מוסתר
+        clearStudentDetailsForm();  //ניקוי השדות בטופס
     }
 
+    //פונקציה לניקוי כל השדות בטופס ואיפוס משתני התמונה
     private void clearStudentDetailsForm() {
         fullNameEditText.setText("");
         organizationIdEditText.setText("");
@@ -164,7 +160,7 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
         parent1NameEditText.setText("");
         parent2NameEditText.setText("");
         parentPhoneEditText.setText("");
-        profileImage.setImageBitmap(null);
+        profileImage.setImageBitmap(null); //ניקוי תמונה
         currentProfileBitmap = null;
         newImageUri = null;
         if (genderSpinner.getAdapter() != null && genderSpinner.getAdapter().getCount() > 0) genderSpinner.setSelection(0);
@@ -172,64 +168,71 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
     }
 
 
+    //פונקציה להגדרת מאזינים לרכיבי UI
     private void setupListeners() {
         ImageView logoImage = findViewById(R.id.logoImage);
-        logoImage.setOnClickListener(v -> routeUserBasedOnType());
+        logoImage.setOnClickListener(v -> routeUserBasedOnType()); //לחיצה על הלוגו תנתב על המשתמש לפי הסוג שלו
 
-        //searchButton.setOnClickListener(v -> searchStudentByName());
+        //המשתמש בוחר שם מהרשימה הנפתחת בחיפוש
         searchStudentAutoComplete.setOnItemClickListener((parent, view, position, id) -> searchStudentByName());
 
+        //לחיצה על שדות התאריך פותחת דיאלוג לבחירת תאריך
         birthDateEditText.setOnClickListener(v -> showDatePickerDialog(birthDateEditText));
         joinDateEditText.setOnClickListener(v -> showDatePickerDialog(joinDateEditText));
-        uploadImageButton.setOnClickListener(v -> openGalleryForNewImage());
-        saveChangesButton.setOnClickListener(v -> saveStudentChanges());
 
-        deleteStudentButton.setOnClickListener(v -> {
-            if (currentStudentDocumentId != null) {
-                showDeletePopup();
+        uploadImageButton.setOnClickListener(v -> openGalleryForNewImage()); //לחיצה על "שנה תמונה" פותחת גלריה
+        saveChangesButton.setOnClickListener(v -> saveStudentChanges()); //לחיצה על "שמור שינויים" שומרת נתונים עדכניים
+
+        deleteStudentButton.setOnClickListener(v -> {  //לחיצה על כפתור מחיקה מהמערכת
+            if (currentStudentDocumentId != null) { //בדיקה אם נבחר חניך
+                showDeletePopup();  //הצגת פופאפ לאישור מחיקה מהמערכת והזנת תאריך עזיבה
             } else {
                 Toast.makeText(this, "נא לבחור חניך תחילה", Toast.LENGTH_SHORT).show();
             }
         });
-        convertToGuideButton.setOnClickListener(v -> {
+        /*convertToGuideButton.setOnClickListener(v -> {
             Toast.makeText(this, "פונקציית המרה למדריך עוד לא מומשה", Toast.LENGTH_SHORT).show();
-        });
+        });*/
     }
 
+    //פונקציה לטעינת שמות כל החניכים מFIRESTORE והצגתם בשדה החיפוש עם השלמה אוטומטית
     private void loadStudentNamesForAutoComplete() {
-        db.collection("students")
-                .get()
+        db.collection("students")  //גישה לcollection students בתוך FIRESTORE
+                .get()  //קבלת כל המסמכים שבתוך collections students
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        List<String> studentNames = new ArrayList<>();
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            String name = document.getString("fullName");
+                        List<String> studentNames = new ArrayList<>(); //רשימת עבור שמות החניכים
+                        for (QueryDocumentSnapshot document : task.getResult()) { //מעבר על כל מסמך בFIRESTORE
+                            String name = document.getString("fullName");  //קבלת שם החניך מהמסמך
                             if (name != null && !name.isEmpty()) {
                                 studentNames.add(name);
                             }
                         }
                         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                                android.R.layout.simple_dropdown_item_1line, studentNames);
+                                android.R.layout.simple_dropdown_item_1line, studentNames);  //יצירת adapter להצגת שמות
                         searchStudentAutoComplete.setAdapter(adapter);
-                    } else {
+                    } else { //טיפול בשגיאה אם טעינת השמות נכשלה
                         Log.e(TAG, "Error getting student names: ", task.getException());
                     }
                 });
     }
 
+    //פונקציה לחיפוש חניך לפי שם שהוזן בשדה החיפוש
     private void searchStudentByName() {
         String studentNameToSearch = searchStudentAutoComplete.getText().toString().trim();
-        if (TextUtils.isEmpty(studentNameToSearch)) {
+        if (TextUtils.isEmpty(studentNameToSearch)) {  //בדיקה אם הוזן שם חניך לחיפוש
             Toast.makeText(this, "נא להזין שם חניך לחיפוש", Toast.LENGTH_SHORT).show();
             return;
         }
+        //ניקוי הטופס והסתרת החלק בו מוצגים פרטי חניך לפני שיש חיפוש חדש
         clearStudentDetailsForm();
         detailsScrollView.setVisibility(View.GONE);
         currentStudentDocumentId = null;
         currentStudent = null;
 
+        //שאילתא לFIRESTORE לחיפוש שם ספציפי
         db.collection("students")
-                .whereEqualTo("fullName", studentNameToSearch)
+                .whereEqualTo("fullName", studentNameToSearch)  //סינון לפי שדה שם מלא
                 .limit(1)
                 .get()
                 .addOnCompleteListener(task -> {
@@ -237,24 +240,25 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
                         if (task.getResult() != null && !task.getResult().isEmpty()) {
                             DocumentSnapshot document = task.getResult().getDocuments().get(0);
                             currentStudentDocumentId = document.getId();
-                            currentStudent = document.toObject(Student.class); // כאן קורית ההמרה
+                            currentStudent = document.toObject(Student.class);
                             if (currentStudent != null) {
-                                populateStudentDetails(currentStudent);
-                                detailsScrollView.setVisibility(View.VISIBLE);
+                                populateStudentDetails(currentStudent); //מילוי שדות בטופס עם פרטי החניך
+                                detailsScrollView.setVisibility(View.VISIBLE); //הצגת החלק במסך שמראה פרטי חניך
                                 Toast.makeText(ShowUpdateStudentActivity.this, "חניך נמצא", Toast.LENGTH_SHORT).show();
                             } else {
                                 Toast.makeText(ShowUpdateStudentActivity.this, "שגיאה בהמרת נתוני חניך", Toast.LENGTH_SHORT).show();
                             }
-                        } else {
+                        } else { //אם אין חניך בשם הרצוי
                             Toast.makeText(ShowUpdateStudentActivity.this, "לא נמצא חניך בשם זה", Toast.LENGTH_SHORT).show();
                         }
-                    } else {
+                    } else {  //טיפול בשגיאה אם החיפוש נכשל
                         Log.e(TAG, "Error searching for student: ", task.getException());
                         Toast.makeText(ShowUpdateStudentActivity.this, "שגיאה בחיפוש חניך", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
+    //פונקציה למילוי שדות הטופס עם פרטי חניך שהתקבלו
     private void populateStudentDetails(Student student) {
         if (student == null) {
             Log.e(TAG, "populateStudentDetails called with null student object.");
@@ -264,6 +268,7 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
         Log.d(TAG, "Populating details for student: " + student.getFullName());
         Log.d(TAG, "Student object from Firestore (after potential mapping): " + student.toString());
 
+        //מילוי כל שדות הטקסט
         fullNameEditText.setText(student.getFullName());
         organizationIdEditText.setText(student.getActiveNumber());
         birthDateEditText.setText(student.getBirthDate());
@@ -275,19 +280,21 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
         parent2NameEditText.setText(student.getParent2Name());
         parentPhoneEditText.setText(student.getParentPhone());
 
+        //הגדרת הבחירות בספינרים
         setSpinnerSelection(genderSpinner, student.getGender(), getResources().getStringArray(R.array.gender_options));
         setSpinnerSelection(dayOfWeekSpinner, student.getDayOfWeek(), getResources().getStringArray(R.array.days_of_week));
 
-        // *** שימוש ב-getter המעודכן ממחלקת Student ***
+        //טעינת תמונה אם יש
         if (student.getProfileImageBase64() != null && !student.getProfileImageBase64().isEmpty()) {
             loadBase64Image(student.getProfileImageBase64(), profileImage);
-        } else {
+        } else {  //אם אין תמונה
             profileImage.setImageBitmap(null);
             currentProfileBitmap = null;
             Log.d(TAG, "No profileImageBase64 found for student or it's empty.");
         }
     }
 
+    //פונקציה לטעינת תמונה ממחרוזת Base64 אל ImageView ועדכון currentProfileBitmap
     private void loadBase64Image(String base64String, ImageView imageView) {
         if (base64String == null || base64String.isEmpty()) {
             Log.w(TAG, "loadBase64Image called with null or empty string.");
@@ -295,134 +302,175 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
             currentProfileBitmap = null;
             return;
         }
-        Log.d(TAG, "Attempting to decode Base64 string of length: " + base64String.length()); // חשוב!
-        try {
+        Log.d(TAG, "Attempting to decode Base64 string of length: " + base64String.length());
+        try {  //המרת מחרוזת Base64 למערך של בתים
             byte[] decodedBytes = Base64.decode(base64String, Base64.DEFAULT);
             if (decodedBytes == null || decodedBytes.length == 0) {
-                Log.e(TAG, "Base64.decode returned null or empty byte array."); // חשוב!
+                Log.e(TAG, "Base64.decode returned null or empty byte array.");
                 imageView.setImageBitmap(null);
                 currentProfileBitmap = null;
                 return;
             }
-            Log.d(TAG, "Decoded byte array length: " + decodedBytes.length); // חשוב!
+            Log.d(TAG, "Decoded byte array length: " + decodedBytes.length);
 
-            currentProfileBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
-            if (currentProfileBitmap != null) {
+            currentProfileBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length); //המרת מערך הבתים לBITMAP
+            if (currentProfileBitmap != null) { //בדיקה שההמרה לBITMAP הצליחה
                 imageView.setImageBitmap(currentProfileBitmap);
-                Log.i(TAG, "Base64 image loaded successfully into ImageView."); // חשוב!
-            } else {
-                Log.e(TAG, "BitmapFactory.decodeByteArray returned null. Invalid image data in Base64?"); // חשוב!
+                Log.i(TAG, "Base64 image loaded successfully into ImageView.");
+            } else {  //אם ההמרה לBITMAP נכשלה
+                Log.e(TAG, "BitmapFactory.decodeByteArray returned null. Invalid image data in Base64?");
                 imageView.setImageBitmap(null);
             }
         } catch (IllegalArgumentException e) {
-            Log.e(TAG, "IllegalArgumentException while decoding Base64 image. String might be malformed.", e); // חשוב!
+            Log.e(TAG, "IllegalArgumentException while decoding Base64 image. String might be malformed.", e);
             imageView.setImageBitmap(null);
             currentProfileBitmap = null;
-        } catch (OutOfMemoryError e) {
-            Log.e(TAG, "OutOfMemoryError while decoding Base64 image. Image might be too large.", e); // חשוב!
+        } catch (OutOfMemoryError e) {  //טיפול בשגיאה אם התמונה גדולה מדי ואין מקום בזיכרון
+            Log.e(TAG, "OutOfMemoryError while decoding Base64 image. Image might be too large.", e);
             Toast.makeText(this, "התמונה גדולה מדי להצגה (נגמר הזיכרון)", Toast.LENGTH_LONG).show();
             imageView.setImageBitmap(null);
             currentProfileBitmap = null;
         }
     }
 
+    //פונקציית עזר להגדרת הבחירה בספינר לפי ערך נתון
     private void setSpinnerSelection(Spinner spinner, String value, String[] array) {
-        // ... (ללא שינוי) ...
         if (value != null && array != null) {
             for (int i = 0; i < array.length; i++) {
                 if (array[i].equals(value)) {
-                    spinner.setSelection(i);
+                    spinner.setSelection(i); //הגדרת הערך הנבחר בספינר
                     break;
                 }
             }
         }
     }
 
+    //פונקציה לפתיחת גלריה לבחירת תמונה
     private void openGalleryForNewImage() {
-        // ... (ללא שינוי) ...
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         intent.setType("image/*");
         imagePickerLauncher.launch(intent);
     }
 
+    //פונקציה לשמירת שינויים בפרטי חניך לFIRESTORE
     private void saveStudentChanges() {
         if (currentStudentDocumentId == null || currentStudent == null) {
             Toast.makeText(this, "נא לבחור חניך תחילה", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        Map<String, Object> updatedData = new HashMap<>();
+        Map<String, Object> updatedData = new HashMap<>(); //אחסון הנתונים המעודכנים
+        //הכנסת כל ערכי השדות מהטופס למפה
         updatedData.put("fullName", fullNameEditText.getText().toString().trim());
-        // *** שינוי: שימוש בשם השדה הנכון כפי שהוא ב-Firestore (וב-Student.java) ***
-        updatedData.put("activeNumber", organizationIdEditText.getText().toString().trim()); // היה organizationId
-        updatedData.put("birthDate", birthDateEditText.getText().toString()); // היה dateOfBirth
+        updatedData.put("activeNumber", organizationIdEditText.getText().toString().trim());
+        updatedData.put("birthDate", birthDateEditText.getText().toString());
         updatedData.put("grade", gradeEditText.getText().toString().trim());
-        updatedData.put("phone", phoneEditText.getText().toString().trim()); // היה phoneNumber
-        updatedData.put("joinDate", joinDateEditText.getText().toString()); // היה joiningDate
+        updatedData.put("phone", phoneEditText.getText().toString().trim());
+        updatedData.put("joinDate", joinDateEditText.getText().toString());
         updatedData.put("address", addressEditText.getText().toString().trim());
         updatedData.put("parent1Name", parent1NameEditText.getText().toString().trim());
         updatedData.put("parent2Name", parent2NameEditText.getText().toString().trim());
-        updatedData.put("parentPhone", parentPhoneEditText.getText().toString().trim()); // היה parentPhoneNumber
+        updatedData.put("parentPhone", parentPhoneEditText.getText().toString().trim());
         updatedData.put("gender", genderSpinner.getSelectedItem().toString());
-        updatedData.put("dayOfWeek", dayOfWeekSpinner.getSelectedItem().toString()); // היה classDay
+        updatedData.put("dayOfWeek", dayOfWeekSpinner.getSelectedItem().toString());
 
-        String newBase64Image = "";
-        if (currentProfileBitmap != null) {
+        String newBase64Image = "";  //מחרוזת לשמירת Base64 של התמונה
+        if (newImageUri != null && currentProfileBitmap != null) {
             try {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                int quality = 60;
-                currentProfileBitmap.compress(Bitmap.CompressFormat.JPEG, quality, baos);
+                currentProfileBitmap.compress(Bitmap.CompressFormat.JPEG, 60, baos);
                 byte[] imageBytes = baos.toByteArray();
-                int maxSizeBytesBeforeEncoding = 500 * 1024;
-
+                //בדירת גודל התמונה כדי לא לחרוג במגבלת הגודל
+                int maxSizeBytesBeforeEncoding = 750 * 1024;
                 if (imageBytes.length < maxSizeBytesBeforeEncoding) {
                     newBase64Image = Base64.encodeToString(imageBytes, Base64.DEFAULT);
-                } else {
-                    Log.w(TAG, "Updated image is still too large. Not saving new image data.");
-                    Toast.makeText(this, "התמונה החדשה גדולה מדי ולא נשמרה.", Toast.LENGTH_LONG).show();
-                    // שמירת התמונה הישנה אם הייתה
-                    newBase64Image = (currentStudent != null && currentStudent.getProfileImageBase64() != null) ? currentStudent.getProfileImageBase64() : "";
+                    Log.d(TAG, "New image (from newImageUri) converted to Base64 and will be saved.");
+                } else { //אם התמונה גדולה מדי
+                    Log.w(TAG, "New selected image is too large after compression. Not saving new image.");
+                    Toast.makeText(this, "התמונה החדשה גדולה מדי ולא נשמרה. נשמרת התמונה הקודמת (אם הייתה).", Toast.LENGTH_LONG).show();
+
+                    if (currentStudent.getProfileImageBase64() != null) { //אם הייתה תמונה לפני כן אז נשמור את הקודמת
+                        newBase64Image = currentStudent.getProfileImageBase64();
+                    } else {
+                        newBase64Image = ""; //אם לא הייתה תמונה ישנה נגדיר מחרוזת ריקה
+                    }
                 }
-            } catch (Exception e) {
-                Log.e(TAG, "Error converting updated Bitmap to Base64", e);
-                newBase64Image = (currentStudent != null && currentStudent.getProfileImageBase64() != null) ? currentStudent.getProfileImageBase64() : "";
+            } catch (Exception e) {  //טיפול בשגיאה אם ההמרה לBase64 נכשלה
+                Log.e(TAG, "Error converting new Bitmap (from newImageUri) to Base64", e);
+                Toast.makeText(this, "שגיאה בעיבוד התמונה החדשה. נשמרת התמונה הקודמת (אם הייתה).", Toast.LENGTH_SHORT).show();
+                if (currentStudent.getProfileImageBase64() != null) { //אם הייתה תמונה ישנה אז נשמור אותה (במצב שיש שגיאה)
+                    newBase64Image = currentStudent.getProfileImageBase64();
+                } else {
+                    newBase64Image = "";
+                }
             }
         }
-        // *** שינוי: שימוש בשם השדה הנכון לתמונה כפי שהוא ב-Firestore (וב-Student.java) ***
-        updatedData.put("profileImageUrl", newBase64Image); // היה profileImageBase64
+
+        //אם לא נבחרה תמונה חדשה או שבחירת התמונה נכשלה
+        else if (newImageUri == null) {
+            if (currentStudent.getProfileImageBase64() != null) { //שמירת תמונה קיימת אם יש כזו
+                newBase64Image = currentStudent.getProfileImageBase64();
+                Log.d(TAG, "No new image selected. Retaining existing student image (if any).");
+            } else {  //אם לא נבחרה תמונה חדשה וגם לא הייתה תמונה ישנה
+                newBase64Image = "";
+                Log.d(TAG, "No new image selected and no existing student image. Saving empty string for image.");
+            }
+        }
+
+
+        updatedData.put("profileImageBase64", newBase64Image);
+
+        //שמירת שדות נוספים אם הם קיימים באובייקט החניך הספציפי
+        if (currentStudent.getClassId() != null) {
+            updatedData.put("classId", currentStudent.getClassId());
+        } else {
+            updatedData.put("classId", "");
+        }
+        if (currentStudent.getLeavingDate() != null) {
+            updatedData.put("leavingDate", currentStudent.getLeavingDate());
+        } else {
+            updatedData.put("leavingDate", "");
+        }
 
         Log.d(TAG, "Attempting to update student data for doc ID: " + currentStudentDocumentId);
-        db.collection("students").document(currentStudentDocumentId)
+        db.collection("students").document(currentStudentDocumentId)  //עדכון מסמך החניך בFIRESTORE עם הנתונים החדשים
                 .update(updatedData)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(ShowUpdateStudentActivity.this, "פרטי החניך עודכנו בהצלחה", Toast.LENGTH_SHORT).show();
-                    detailsScrollView.setVisibility(View.GONE);
-                    searchStudentAutoComplete.setText("");
+                    loadStudentNamesForAutoComplete();  //טעינה מחדש של שמות החניכים כדי לעדכן את רשימת החיפוש
+                    detailsScrollView.setVisibility(View.GONE);  //הסתרת החלק בו מוצגים פרטי חניך
+                    searchStudentAutoComplete.setText("");  //ניקוי שדה החיפוש
+                    searchStudentAutoComplete.clearFocus();
                     clearStudentDetailsForm();
+                    //איפוס משתני חניך נוכחי
+                    currentStudent = null;
+                    currentStudentDocumentId = null;
                 })
-                .addOnFailureListener(e -> {
+                .addOnFailureListener(e -> {  //אם העדכון נכשל
                     Log.e(TAG, "Error updating student data", e);
                     Toast.makeText(ShowUpdateStudentActivity.this, "שגיאה בעדכון פרטי החניך: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 });
     }
 
+    // פונקציה לניתוב המשתמש למסך הראשי המתאים לפי סוג המשתמש (מנהל או מדריך)
     private void routeUserBasedOnType() {
-        // ... (ללא שינוי) ...
-        FirebaseUser user = mAuth.getCurrentUser();
+        FirebaseUser user = mAuth.getCurrentUser(); // קבלת המשתמש הנוכחי שמחובר
         if (user != null) {
             String uid = user.getUid();
+
+            // קריאה ל-Firestore לקבלת סוג המשתמש
             db.collection("users").document(uid).get()
                     .addOnSuccessListener(documentSnapshot -> {
                         if (documentSnapshot.exists()) {
-                            String userType = documentSnapshot.getString("userType");
+                            String userType = documentSnapshot.getString("userType"); //קבלת סוג משתמש
                             Intent intent;
-                            if (userType != null && userType.equalsIgnoreCase("manager")) {
+                            if (userType != null && userType.equalsIgnoreCase("manager")) {  // בדיקה אם המשתמש הוא מנהל
                                 intent = new Intent(ShowUpdateStudentActivity.this, ManagerMainPageActivity.class);
-                            } else {
+                            } else {  //אם המשתמש הוא מדריך
                                 intent = new Intent(ShowUpdateStudentActivity.this, GuideMainPageActivity.class);
                             }
-                            startActivity(intent);
-                            finish();
+                            startActivity(intent);  //פתיחת מסך
+                            finish(); // סגירת המסך הנוכחי
                         } else {
                             Toast.makeText(ShowUpdateStudentActivity.this, "לא נמצאו נתוני משתמש", Toast.LENGTH_SHORT).show();
                         }
@@ -434,12 +482,14 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
         }
     }
 
+    // פונקציה להצגת פופאפ לאישור מחיקה מהאפליקציה והשארה בFIRABASE וגם הזנה ושמירת תאריך עזיבה
     private void showDeletePopup() {
-        // ... (ללא שינוי, אך ודאי שמשתמש ב-currentStudentDocumentId) ...
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         View popupView = getLayoutInflater().inflate(R.layout.popup_delete, null);
         final EditText departureDateEditText = popupView.findViewById(R.id.departureDateEditText);
         Button calendarButton = popupView.findViewById(R.id.calendarButton);
+
+        // לחיצה על כפתור לוח שנה פותחת דיאלוג לבחירת תאריך
         calendarButton.setOnClickListener(v -> showDatePickerDialog(departureDateEditText));
         Button deleteConfirmButton = popupView.findViewById(R.id.deleteConfirmButton);
         ImageView closeButton = popupView.findViewById(R.id.closePopupButton);
@@ -447,14 +497,16 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
 
         deleteConfirmButton.setOnClickListener(v -> {
             String departureDate = departureDateEditText.getText().toString();
-            if (!departureDate.isEmpty()) {
-                if (currentStudentDocumentId != null) {
+            if (!departureDate.isEmpty()) {  // בדיקה שהוזן תאריך עזיבה
+                if (currentStudentDocumentId != null) { //בדיקה שיש שיוך לחניך
                     Map<String, Object> update = new HashMap<>();
                     update.put("leavingDate", departureDate);
+
+                    // עדכון המסמך של החניך עם תאריך העזיבה
                     db.collection("students").document(currentStudentDocumentId).update(update)
                             .addOnSuccessListener(aVoid -> {
                                 Toast.makeText(ShowUpdateStudentActivity.this, "תאריך עזיבה נשמר", Toast.LENGTH_SHORT).show();
-                                dialog.dismiss();
+                                dialog.dismiss();  // סגירת הפופאפ
                                 detailsScrollView.setVisibility(View.GONE);
                                 searchStudentAutoComplete.setText("");
                                 clearStudentDetailsForm();
@@ -466,24 +518,25 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
             }
         });
         closeButton.setOnClickListener(v -> dialog.dismiss());
-        dialog.show();
+        dialog.show();  // הצגת הפופאפ
     }
 
+    // פונקציה להצגת דיאלוג לבחירת תאריך
     private void showDatePickerDialog(EditText targetEditText) {
-        // ... (ללא שינוי) ...
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance();  //יצירת מופע של לוח שנה
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
+        // יצירת דיאלוג לבחירת תאריך
         DatePickerDialog datePickerDialog = new DatePickerDialog(
                 this,
                 (view, selectedYear, selectedMonth, selectedDay) -> {
-                    String selectedDate = String.format("%02d/%02d/%04d", selectedDay, selectedMonth + 1, selectedYear);
-                    targetEditText.setText(selectedDate);
+                    String selectedDate = String.format("%02d/%02d/%04d", selectedDay, selectedMonth + 1, selectedYear);  // עיצוב התאריך הנבחר למחרוזת dd/MM/yyyy
+                    targetEditText.setText(selectedDate);  // הצבת התאריך הנבחר בשדה הטקסט המתאים
                 },
                 year, month, day
         );
-        datePickerDialog.show();
+        datePickerDialog.show();  //הצגת הדיאלוג
     }
 }

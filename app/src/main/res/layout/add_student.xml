@@ -131,7 +131,7 @@
                     android:id="@+id/birthDateButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/choosedate"
+                    android:text="@string/choose_date"
                     android:backgroundTint="#7387CEEB"
                     android:textColor="#000000"
                     />
