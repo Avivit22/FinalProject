@@ -70,8 +70,7 @@
         </LinearLayout>
 
         <!-- שורת חיפוש חניך -->
-        <EditText
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <AutoCompleteTextView
             android:id="@+id/search_student"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -81,6 +80,7 @@
             android:textColorHint="#A9A9A9"
             android:padding="12dp"
             android:drawableStart="@drawable/search_icon" />
+
 
         <LinearLayout
             android:orientation="horizontal"

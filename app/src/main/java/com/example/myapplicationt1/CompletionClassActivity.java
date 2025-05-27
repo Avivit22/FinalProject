@@ -1,80 +1,188 @@
 package com.example.myapplicationt1;
 
 import androidx.appcompat.app.AppCompatActivity;
-import android.os.Bundle;
-import android.content.Intent;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-import java.util.Calendar;
+
 import android.app.DatePickerDialog;
-import android.widget.Toast;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.*;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.*;
+
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+
 
 public class CompletionClassActivity extends AppCompatActivity {
 
-    // הגדרת משתנים ברמת המחלקה
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
+
+    private AutoCompleteTextView searchStudentView;
+    private TextView regularDayText;
+    private TextView completionDateSelected, missingDateSelected;
+    private Button saveButton;
+    private String selectedStudentName = "";
+    private String regularDay = "";
+    private String completionDate = "";
+    private String missingDate = "";
+    private boolean requiresManagerApproval = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.completion_class); // טוען את קובץ ה-XML
+        setContentView(R.layout.completion_class);
 
-        // אתחול כפתורים וטקסטים
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+
+        // UI
+        searchStudentView = findViewById(R.id.search_student);
+        regularDayText = findViewById(R.id.regular_day);
+        completionDateSelected = findViewById(R.id.completion_date_selected);
+        missingDateSelected = findViewById(R.id.missing_date_selected);
+        saveButton = findViewById(R.id.save_button);
+
         Button yesButton = findViewById(R.id.yes_button);
-        TextView missingDateLabel = findViewById(R.id.missing_date_label);
-        Button missingDateButton = findViewById(R.id.missing_date_button);
-        Button completionDateButton = findViewById(R.id.completion_date_button);
-
         Button noButton = findViewById(R.id.no_button);
-        noButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(CompletionClassActivity.this, "הבקשה הועברה לאישור המנהל", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        TextView completionDateSelected = findViewById(R.id.completion_date_selected);
-        TextView missingDateSelected = findViewById(R.id.missing_date_selected);
+        Button completionDateButton = findViewById(R.id.completion_date_button);
+        Button missingDateButton = findViewById(R.id.missing_date_button);
+        TextView missingDateLabel = findViewById(R.id.missing_date_label);
 
         missingDateLabel.setVisibility(View.GONE);
         missingDateButton.setVisibility(View.GONE);
 
-        yesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                missingDateLabel.setVisibility(View.VISIBLE);
-                missingDateButton.setVisibility(View.VISIBLE);
-            }
+        yesButton.setOnClickListener(v -> {
+            requiresManagerApproval = false;
+            missingDateLabel.setVisibility(View.VISIBLE);
+            missingDateButton.setVisibility(View.VISIBLE);
         });
 
-        completionDateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDatePickerDialog("מועד שיעור השלמה", completionDateSelected);
-            }
+        noButton.setOnClickListener(v -> {
+            requiresManagerApproval = true;
+            missingDateLabel.setVisibility(View.GONE);
+            missingDateButton.setVisibility(View.GONE);
+            missingDate = "";
+            Toast.makeText(this, "הבקשה תישלח לאישור מנהל", Toast.LENGTH_SHORT).show();
         });
 
-        missingDateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDatePickerDialog("תאריך חיסור", missingDateSelected);
-            }
+        completionDateButton.setOnClickListener(v -> {
+            showDatePickerDialog((date) -> {
+                completionDate = date;
+                completionDateSelected.setText("התאריך שנבחר: " + date);
+                completionDateSelected.setVisibility(View.VISIBLE);
+            });
         });
 
-        // אתחול Firebase Auth ו-Firestore
-        mAuth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();
+        missingDateButton.setOnClickListener(v -> {
+            showDatePickerDialog((date) -> {
+                missingDate = date;
+                missingDateSelected.setText("התאריך שנבחר: " + date);
+                missingDateSelected.setVisibility(View.VISIBLE);
+            });
+        });
 
-        // מאזין ללחיצה על תמונת הלוגו
+        // 🔎 Load student names for AutoComplete
+        loadStudentNames();
+
+        // שמירה
+        saveButton.setOnClickListener(v -> saveCompletion());
+
+        // ניווט בלחיצה על לוגו
         ImageView logoImage = findViewById(R.id.logoImage);
         logoImage.setOnClickListener(v -> routeUserBasedOnType());
+    }
+
+    private void loadStudentNames() {
+        db.collection("students")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<String> names = new ArrayList<>();
+                    for (DocumentSnapshot doc : querySnapshot) {
+                        String name = doc.getString("fullName");
+                        if (name != null) names.add(name);
+                    }
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, names);
+                    searchStudentView.setAdapter(adapter);
+
+                    searchStudentView.setOnItemClickListener((parent, view, position, id) -> {
+                        selectedStudentName = parent.getItemAtPosition(position).toString();
+                        fetchRegularDayForStudent(selectedStudentName);
+                    });
+                });
+    }
+
+    private void fetchRegularDayForStudent(String studentName) {
+        db.collection("students")
+                .whereEqualTo("fullName", studentName)
+                .get()
+                .addOnSuccessListener(query -> {
+                    if (!query.isEmpty()) {
+                        String day = query.getDocuments().get(0).getString("dayOfWeek");
+                        regularDay = day != null ? day : "";
+                        regularDayText.setText(regularDay);
+                    }
+                });
+    }
+
+    private void saveCompletion() {
+        if (selectedStudentName.isEmpty() || completionDate.isEmpty()) {
+            Toast.makeText(this, "נא למלא את כל השדות", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        Date parsedCompletionDate = null;
+        Date parsedMissingDate = null;
+
+        try {
+            parsedCompletionDate = format.parse(completionDate);
+            if (!missingDate.isEmpty()) {
+                parsedMissingDate = format.parse(missingDate);
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "שגיאה בפענוח התאריכים", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("studentName", selectedStudentName);
+        data.put("regularDay", regularDay);
+        data.put("completionDate", parsedCompletionDate); // Timestamp בפיירסטור
+        data.put("missingDate", parsedMissingDate);       // Timestamp בפיירסטור
+        data.put("requiresManagerApproval", requiresManagerApproval);
+        data.put("timestamp", System.currentTimeMillis());
+
+        db.collection("completions")
+                .add(data)
+                .addOnSuccessListener(docRef ->
+                        Toast.makeText(this, "השלמה נרשמה בהצלחה", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "שגיאה בשמירה: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
+
+    private void showDatePickerDialog(OnDateSelected listener) {
+        Calendar calendar = Calendar.getInstance();
+        DatePickerDialog dialog = new DatePickerDialog(
+                this,
+                (view, year, month, dayOfMonth) -> {
+                    String date = dayOfMonth + "/" + (month + 1) + "/" + year;
+                    listener.onDateSelected(date);
+                },
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)
+        );
+        dialog.show();
+    }
+
+    interface OnDateSelected {
+        void onDateSelected(String date);
     }
 
     // פונקציה לשאיבת סוג המשתמש מ-Firestore והעברה בהתאם לעמוד הבית של מנהל או מדריך
@@ -103,28 +211,5 @@ public class CompletionClassActivity extends AppCompatActivity {
         } else {
             Toast.makeText(CompletionClassActivity.this, "לא קיים משתמש מחובר", Toast.LENGTH_SHORT).show();
         }
-    }
-
-    // פונקציה לפתיחת לוח שנה
-    private void showDatePickerDialog(String title, TextView targetTextView) {
-        Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-        DatePickerDialog datePickerDialog = new DatePickerDialog(
-                this,
-                (view, selectedYear, selectedMonth, selectedDay) -> {
-                    String selectedDate = selectedDay + "/" + (selectedMonth + 1) + "/" + selectedYear;
-                    targetTextView.setText("התאריך שנבחר: " + selectedDate);
-                    targetTextView.setVisibility(View.VISIBLE);
-                },
-                year,
-                month,
-                day
-        );
-
-        datePickerDialog.setTitle(title);
-        datePickerDialog.show();
     }
 }

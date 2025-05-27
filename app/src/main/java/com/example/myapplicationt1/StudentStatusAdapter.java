@@ -49,6 +49,7 @@ public class StudentStatusAdapter extends RecyclerView.Adapter<StudentStatusAdap
     public static class StatusViewHolder extends RecyclerView.ViewHolder {
 
         TextView tvStudentName;
+        TextView tvSpecialLabel; // חדש
         RadioGroup rgAttendanceStatus;
         RadioButton rbPresent, rbAbsent, rbReplacement;
         CheckBox cbToran;
@@ -57,6 +58,7 @@ public class StudentStatusAdapter extends RecyclerView.Adapter<StudentStatusAdap
         public StatusViewHolder(@NonNull View itemView) {
             super(itemView);
             tvStudentName = itemView.findViewById(R.id.tvStudentName);
+            tvSpecialLabel = itemView.findViewById(R.id.tvSpecialLabel); // חדש
             rgAttendanceStatus = itemView.findViewById(R.id.rgAttendanceStatus);
             rbPresent = itemView.findViewById(R.id.rbPresent);
             rbAbsent = itemView.findViewById(R.id.rbAbsent);
@@ -67,6 +69,14 @@ public class StudentStatusAdapter extends RecyclerView.Adapter<StudentStatusAdap
 
         public void bind(StudentStatus status) {
             tvStudentName.setText(status.getStudentName());
+
+            // ✨ אם notes כולל "השלמה" – נציג תווית אדומה
+            if (status.getNotes() != null && status.getNotes().contains("השלמה")) {
+                tvSpecialLabel.setText("(שיעור השלמה)");
+                tvSpecialLabel.setVisibility(View.VISIBLE);
+            } else {
+                tvSpecialLabel.setVisibility(View.GONE);
+            }
 
             // Restore selection
             switch (status.getStatus()) {
@@ -88,18 +98,13 @@ public class StudentStatusAdapter extends RecyclerView.Adapter<StudentStatusAdap
             cbToran.setOnCheckedChangeListener((v, isChecked) -> status.setToran(isChecked));
 
             etNotes.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    status.setNotes(s.toString()); // כל שינוי מתעדכן מיד במודל
+                @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    status.setNotes(s.toString());
                 }
-
-                @Override
-                public void afterTextChanged(Editable s) {}
+                @Override public void afterTextChanged(Editable s) {}
             });
-
         }
     }
+
 }

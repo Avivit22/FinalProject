@@ -58,7 +58,11 @@ public class InsertStatusActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         // תאריך של היום (לשמירה)
-        todayDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+        SimpleDateFormat stringFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+        todayDate = stringFormat.format(new Date());
+
+        SimpleDateFormat firebaseFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        String todayDateFirestoreFormat = firebaseFormat.format(new Date());
 
         rvStudents = findViewById(R.id.rvStudentsStatus);
         rvStudents.setLayoutManager(new LinearLayoutManager(this));
@@ -97,13 +101,25 @@ public class InsertStatusActivity extends AppCompatActivity {
 
     private void loadStudentsForToday(String todayHebrewDay) {
         loadExistingAttendance(() -> {
+            studentStatuses.clear();
+            filteredStatuses.clear();
+
+            SimpleDateFormat firebaseFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            Date todayDateForQuery;
+            try {
+                todayDateForQuery = firebaseFormat.parse(
+                        new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date())
+                );
+            } catch (Exception e) {
+                Toast.makeText(this, "שגיאה בפורמט תאריך", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            //  חניכים קבועים
             db.collection("students")
                     .whereEqualTo("dayOfWeek", todayHebrewDay)
                     .get()
                     .addOnSuccessListener(query -> {
-                        studentStatuses.clear();
-                        filteredStatuses.clear();
-
                         for (DocumentSnapshot doc : query.getDocuments()) {
                             String name = doc.getString("fullName");
                             if (name == null) continue;
@@ -115,18 +131,49 @@ public class InsertStatusActivity extends AppCompatActivity {
                             studentStatuses.add(status);
                         }
 
-                        // מיון לפי שם
-                        Collections.sort(studentStatuses, Comparator.comparing(StudentStatus::getStudentName));
+                        //  חניכים שמבצעים השלמה
+                        db.collection("completions")
+                                .whereEqualTo("completionDate", todayDateForQuery)
+                                .get()
+                                .addOnSuccessListener(completions -> {
+                                    for (DocumentSnapshot doc : completions.getDocuments()) {
+                                        String name = doc.getString("studentName");
+                                        if (name == null) continue;
 
-                        // העתקה למסוננת
-                        filteredStatuses.addAll(studentStatuses);
+                                        boolean alreadyExists = studentStatuses.stream()
+                                                .anyMatch(s -> s.getStudentName().equals(name));
 
-                        adapter.notifyDataSetChanged();
-                    })
-                    .addOnFailureListener(e ->
-                            Toast.makeText(this, "שגיאה בטעינת חניכים: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                                        if (!alreadyExists) {
+                                            StudentStatus status = existingAttendance.containsKey(name)
+                                                    ? existingAttendance.get(name)
+                                                    : new StudentStatus(name, "", false, "(שיעור השלמה)", todayDate);
+
+                                            studentStatuses.add(status);
+                                        }
+                                    }
+
+                                    //  חניכים שמחסירים היום
+                                    db.collection("completions")
+                                            .whereEqualTo("missingDate", todayDateForQuery)
+                                            .get()
+                                            .addOnSuccessListener(missing -> {
+                                                for (DocumentSnapshot doc : missing.getDocuments()) {
+                                                    String name = doc.getString("studentName");
+                                                    if (name != null) {
+                                                        studentStatuses.removeIf(s -> s.getStudentName().equals(name));
+                                                    }
+                                                }
+
+                                                Collections.sort(studentStatuses, Comparator.comparing(StudentStatus::getStudentName));
+                                                filteredStatuses.addAll(studentStatuses);
+                                                adapter.notifyDataSetChanged();
+                                            });
+                                });
+                    });
         });
     }
+
+
 
     private void saveStatuses() {
         List<StudentStatus> statuses = adapter.collectStatuses();

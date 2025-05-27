@@ -12,14 +12,20 @@ import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 public class ShowScheduleActivity extends AppCompatActivity {
 
@@ -60,12 +66,13 @@ public class ShowScheduleActivity extends AppCompatActivity {
 
             String dayNameEnglish = calendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.ENGLISH).toUpperCase();
             String dayNameHebrew = convertDayToHebrew(dayNameEnglish); // נוסיף תרגום לעברית
+            String selectedDateFormatted = dayOfMonth + "/" + (month + 1) + "/" + year;
 
             String schedule = scheduleMap.getOrDefault(dayNameEnglish, "אין חוגים ביום זה");
             tvSchedule.setText("שעות החוג: " + schedule);
 
             loadGuidesForDay(dayNameHebrew); // נשלח את השם בעברית לשאילתה!
-            loadStudentsForDay(dayNameHebrew);
+            loadStudentsAndCompletionsForDay(dayNameHebrew, selectedDateFormatted);
 
         });
 
@@ -74,12 +81,6 @@ public class ShowScheduleActivity extends AppCompatActivity {
         List<String> guideNames = new ArrayList<>();
         GuideAdapter adapter = new GuideAdapter(guideNames);
         rvInstructors.setAdapter(adapter);
-
-        //  ה-RecyclerView של החניכים:
-        RecyclerView rvStudents = findViewById(R.id.rvStudents);
-        List<String> studentNames = new ArrayList<>();
-        StudentAdapter studentAdapter = new StudentAdapter(studentNames);
-        rvStudents.setAdapter(studentAdapter);
     }
 
     // ניווט לפי סוג משתמש
@@ -147,28 +148,69 @@ public class ShowScheduleActivity extends AppCompatActivity {
                         Toast.makeText(this, "שגיאה בשליפת מדריכים: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
-    private void loadStudentsForDay(String dayName) {
+    private void loadStudentsAndCompletionsForDay(String dayName, String selectedDateFormatted) {
         RecyclerView rvStudents = findViewById(R.id.rvStudents);
         List<String> studentNames = new ArrayList<>();
-        StudentAdapter adapter = new StudentAdapter(studentNames);
-        rvStudents.setAdapter(adapter);
+        Set<String> completionNames = new HashSet<>();
 
+        // המרה מ-String לתאריך
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        Date parsedDate;
+        try {
+            parsedDate = format.parse(selectedDateFormatted);
+        } catch (Exception e) {
+            Toast.makeText(this, "שגיאה בפענוח תאריך", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Date finalSelectedDate = parsedDate; // 💡 חייב להיות final עבור ה-Lambda
+
+        // שליפת תלמידים קבועים
         db.collection("students")
                 .whereEqualTo("dayOfWeek", dayName)
                 .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    studentNames.clear();
-                    queryDocumentSnapshots.forEach(document -> {
-                        String name = document.getString("fullName");
+                .addOnSuccessListener(query -> {
+                    for (DocumentSnapshot doc : query.getDocuments()) {
+                        String name = doc.getString("fullName");
                         if (name != null) {
                             studentNames.add(name);
                         }
-                    });
-                    adapter.notifyDataSetChanged();
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(this, "שגיאה בשליפת חניכים: " + e.getMessage(), Toast.LENGTH_SHORT).show());
-    }
+                    }
 
+                    // שליפת שיעורי השלמה לתאריך זה
+                    db.collection("completions")
+                            .whereEqualTo("completionDate", finalSelectedDate)
+                            .get()
+                            .addOnSuccessListener(completions -> {
+                                for (DocumentSnapshot doc : completions) {
+                                    String name = doc.getString("studentName");
+                                    if (name != null && !studentNames.contains(name)) {
+                                        studentNames.add(name);
+                                    }
+                                    if (name != null) {
+                                        completionNames.add(name); // יצוין כהשלמה
+                                    }
+                                }
+
+                                // שליפת חיסורים שצריך להסיר מהתאריך הזה
+                                db.collection("completions")
+                                        .whereEqualTo("missingDate", finalSelectedDate)
+                                        .get()
+                                        .addOnSuccessListener(missing -> {
+                                            for (DocumentSnapshot doc : missing) {
+                                                String name = doc.getString("studentName");
+                                                if (name != null) {
+                                                    studentNames.remove(name);
+                                                }
+                                            }
+
+                                            // סידור והתצוגה
+                                            Collections.sort(studentNames);
+                                            StudentAdapter adapter = new StudentAdapter(studentNames, completionNames);
+                                            rvStudents.setAdapter(adapter);
+                                        });
+                            });
+                });
+    }
 
 }
