@@ -17,9 +17,10 @@
         android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="#000000"
-        android:layout_gravity="right"
-        android:layout_marginRight="20dp" />
+        android:layout_gravity="end"
+        android:layout_marginBottom="4dp" />
 
+    <!-- תגית (שיעור השלמה) -->
     <TextView
         android:id="@+id/tvSpecialLabel"
         android:layout_width="wrap_content"
@@ -28,50 +29,91 @@
         android:textColor="#FF0000"
         android:textSize="14sp"
         android:visibility="gone"
-        android:layout_marginStart="8dp"/>
+        android:layout_gravity="end"
+        android:layout_marginBottom="6dp"/>
 
-    <!-- סטטוס נוכחות -->
-    <RadioGroup
-        android:id="@+id/rgAttendanceStatus"
+    <!-- נוכחות + חיסור + השלמה + תורן -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="10dp"
-        android:layout_gravity="center">
+        android:gravity="center_vertical"
+        android:layoutDirection="ltr"
+        android:layout_marginBottom="6dp">
 
-        <RadioButton
-            android:id="@+id/rbPresent"
+        <!-- תורן בצד שמאל -->
+        <CheckBox
+            android:id="@+id/cbToran"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="נוכח" />
+            android:text="תורן"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="0dp"
+            android:layoutDirection="rtl"
+            />
 
-        <RadioButton
-            android:id="@+id/rbAbsent"
+        <!-- רווח בין -->
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <!-- רדיובטנים -->
+        <RadioGroup
+            android:id="@+id/rgAttendanceStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="חיסור" />
+            android:orientation="horizontal"
+            android:layoutDirection="rtl">
 
-        <RadioButton
-            android:id="@+id/rbReplacement"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="השלמה" />
-    </RadioGroup>
 
-    <CheckBox
-        android:id="@+id/cbToran"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="תורן" />
+            <RadioButton
+                android:id="@+id/rbPresent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="נוכח" />
 
-    <!-- הערות -->
-    <EditText
-        android:id="@+id/etNotes"
+            <RadioButton
+                android:id="@+id/rbAbsent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="חיסור" />
+
+            <RadioButton
+                android:id="@+id/rbReplacement"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="השלמה" />
+        </RadioGroup>
+    </LinearLayout>
+
+
+    <!-- שורת "פרטי חניך" + הערות -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="הערות"
-        android:background="#E8E8E8"
-        android:padding="8dp"
-        android:layout_marginTop="8dp" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="4dp">
+
+        <Button
+            android:id="@+id/btnDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="פרטי חניך"
+            android:backgroundTint="#B7E4F7"
+            android:textColor="#000000"
+            android:layout_marginEnd="8dp" />
+
+        <EditText
+            android:id="@+id/etNotes"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="הערות"
+            android:background="#E8E8E8"
+            android:padding="8dp"
+            android:gravity="right"/>
+    </LinearLayout>
 
 </LinearLayout>

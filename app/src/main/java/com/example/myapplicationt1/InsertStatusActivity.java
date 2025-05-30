@@ -66,7 +66,7 @@ public class InsertStatusActivity extends AppCompatActivity {
 
         rvStudents = findViewById(R.id.rvStudentsStatus);
         rvStudents.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new StudentStatusAdapter(filteredStatuses);
+        adapter = new StudentStatusAdapter(this, filteredStatuses);
         rvStudents.setAdapter(adapter);
 
         // היום בשבוע בעברית (לשליפה)
@@ -193,17 +193,6 @@ public class InsertStatusActivity extends AppCompatActivity {
 
         Toast.makeText(this, "הנוכחות עודכנה בהצלחה", Toast.LENGTH_SHORT).show();
     }
-
-
-    /**
-     * מעבר לעמוד פרטי החניך עם העברת שם החניך
-
-    private void openStudentDetails(String studentName) {
-        Intent intent = new Intent(InsertStatusActivity.this, ShowUpdateStudentActivity.class);
-        intent.putExtra("STUDENT_NAME", studentName); // שולח את שם החניך לעמוד הבא
-        startActivity(intent);
-    }
-     */
 
     //  פונקציה לקבלת סוג המשתמש והעברה למסך בית מנהל או מדריך בהתאם לסוג משתמש
     private void routeUserBasedOnType() {

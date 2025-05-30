@@ -1,10 +1,13 @@
 package com.example.myapplicationt1;
 
+import android.content.Context;
+import android.content.Intent;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -19,17 +22,21 @@ import java.util.List;
 public class StudentStatusAdapter extends RecyclerView.Adapter<StudentStatusAdapter.StatusViewHolder> {
 
     private final List<StudentStatus> studentStatuses;
+    private final Context context;
 
-    public StudentStatusAdapter(List<StudentStatus> studentStatuses) {
+    public StudentStatusAdapter(Context context, List<StudentStatus> studentStatuses) {
+        this.context = context;
         this.studentStatuses = studentStatuses;
     }
+
 
     @NonNull
     @Override
     public StatusViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_student_status, parent, false);
-        return new StatusViewHolder(view);
+        return new StatusViewHolder(view, parent.getContext());
     }
+
 
     @Override
     public void onBindViewHolder(@NonNull StatusViewHolder holder, int position) {
@@ -46,17 +53,20 @@ public class StudentStatusAdapter extends RecyclerView.Adapter<StudentStatusAdap
         return studentStatuses;
     }
 
-    public static class StatusViewHolder extends RecyclerView.ViewHolder {
+    public class StatusViewHolder extends RecyclerView.ViewHolder {
+        private final Context context;
 
         TextView tvStudentName;
-        TextView tvSpecialLabel; // חדש
+        TextView tvSpecialLabel;
         RadioGroup rgAttendanceStatus;
         RadioButton rbPresent, rbAbsent, rbReplacement;
         CheckBox cbToran;
         EditText etNotes;
-
-        public StatusViewHolder(@NonNull View itemView) {
+        Button btnDetails;
+        public StatusViewHolder(@NonNull View itemView, Context context) {
             super(itemView);
+            this.context = context;
+
             tvStudentName = itemView.findViewById(R.id.tvStudentName);
             tvSpecialLabel = itemView.findViewById(R.id.tvSpecialLabel); // חדש
             rgAttendanceStatus = itemView.findViewById(R.id.rgAttendanceStatus);
@@ -65,12 +75,13 @@ public class StudentStatusAdapter extends RecyclerView.Adapter<StudentStatusAdap
             rbReplacement = itemView.findViewById(R.id.rbReplacement);
             cbToran = itemView.findViewById(R.id.cbToran);
             etNotes = itemView.findViewById(R.id.etNotes);
+            btnDetails = itemView.findViewById(R.id.btnDetails);
         }
 
         public void bind(StudentStatus status) {
             tvStudentName.setText(status.getStudentName());
 
-            // ✨ אם notes כולל "השלמה" – נציג תווית אדומה
+            //  אם notes כולל "השלמה" – נציג תווית אדומה
             if (status.getNotes() != null && status.getNotes().contains("השלמה")) {
                 tvSpecialLabel.setText("(שיעור השלמה)");
                 tvSpecialLabel.setVisibility(View.VISIBLE);
@@ -104,6 +115,13 @@ public class StudentStatusAdapter extends RecyclerView.Adapter<StudentStatusAdap
                 }
                 @Override public void afterTextChanged(Editable s) {}
             });
+            btnDetails.setOnClickListener(v -> {
+                Intent intent = new Intent(itemView.getContext(), ShowUpdateStudentActivity.class);
+                intent.putExtra("STUDENT_NAME", status.getStudentName());
+                itemView.getContext().startActivity(intent);
+            });
+
+
         }
     }
 

@@ -116,6 +116,13 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
         initializeUI(); //אתחול רכיבי UI
         setupListeners();  //הגדרת מאזינים לאירועים
         loadStudentNamesForAutoComplete(); //טעינת שמות חניכים לשדה החיפוש
+
+        String passedName = getIntent().getStringExtra("STUDENT_NAME");
+        if (passedName != null && !passedName.isEmpty()) {
+            searchStudentAutoComplete.setText(passedName);
+            searchStudentByName(); // טען אוטומטית את הפרטים
+        }
+
     }
 
     //פונקציה לאתחול כל רכיבי הUI שמוגדרים בקובץ הXML
