@@ -10,6 +10,8 @@ public class CompletionRequest {
     private Date missingDate;
     private boolean requiresManagerApproval;
     private boolean approved;
+    private String id;
+    private boolean rejected;
 
     public CompletionRequest() {}
 
@@ -21,6 +23,9 @@ public class CompletionRequest {
     public Date getMissingDate() { return missingDate; }
     public boolean isRequiresManagerApproval() { return requiresManagerApproval; }
     public boolean isApproved() { return approved; }
+    public String getId() { return id; }
+    public boolean isRejected() { return rejected; }
+
 
     // Setters
     public void setStudentName(String studentName) { this.studentName = studentName; }
@@ -30,4 +35,6 @@ public class CompletionRequest {
     public void setMissingDate(Date missingDate) { this.missingDate = missingDate; }
     public void setRequiresManagerApproval(boolean requiresManagerApproval) { this.requiresManagerApproval = requiresManagerApproval; }
     public void setApproved(boolean approved) { this.approved = approved; }
+    public void setId(String id) { this.id = id; }
+    public void setRejected(boolean rejected) { this.rejected = rejected; }
 }

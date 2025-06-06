@@ -9,6 +9,9 @@ import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
@@ -49,24 +52,84 @@ public class CompletionRequestAdapter extends RecyclerView.Adapter<CompletionReq
                 });
 
         holder.btnApprove.setOnClickListener(v -> {
-            db.collection("completions").document(request.getStudentName() + "_" + request.getCompletionDate().getTime())
-                    .update("approved", true)
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+            String managerId = currentUser != null ? currentUser.getUid() : "unknown";
+
+            db.collection("completions").document(request.getId())
+                    .update(
+                            "status", "approved",
+                            "type", "שיעור נוסף",
+                            "approvedBy", managerId,
+                            "decisionAt", FieldValue.serverTimestamp()
+                    )
+
                     .addOnSuccessListener(aVoid -> {
-                        Toast.makeText(context, "אושר", Toast.LENGTH_SHORT).show();
-                        requests.remove(position);
-                        notifyItemRemoved(position);
+
+                        // בדיקה אם כבר קיים שיעור נוסף באותו תאריך לאותו חניך
+                        db.collection("schedule")
+                                .whereEqualTo("studentName", request.getStudentName())
+                                .whereEqualTo("date", request.getCompletionDate())
+                                .get()
+                                .addOnSuccessListener(query -> {
+                                    if (!query.isEmpty()) {
+                                        Toast.makeText(context, "כבר קיים שיעור בלוח בתאריך הזה", Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }
+
+                                    // יצירת שיעור נוסף בלוח
+                                    Map<String, Object> scheduleData = new HashMap<>();
+                                    scheduleData.put("studentName", request.getStudentName());
+                                    scheduleData.put("guideId", request.getSubmittedBy());
+                                    scheduleData.put("isCompletion", true);
+                                    scheduleData.put("type", "שיעור נוסף");
+                                    scheduleData.put("date", request.getCompletionDate());
+                                    scheduleData.put("time", "17:00 - 19:00");
+                                    scheduleData.put("day", getDayOfWeek(request.getCompletionDate()));
+
+                                    db.collection("schedule")
+                                            .add(scheduleData)
+                                            .addOnSuccessListener(ref -> {
+                                                Toast.makeText(context, "השיעור נוסף ללוח החוגים", Toast.LENGTH_SHORT).show();
+                                                requests.remove(position);
+                                                notifyItemRemoved(position);
+                                            })
+                                            .addOnFailureListener(e -> {
+                                                Toast.makeText(context, "שגיאה בהוספה ללוח: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                            });
+                                });
+
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(context, "שגיאה באישור הבקשה: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     });
         });
 
+
+
         holder.btnReject.setOnClickListener(v -> {
-            db.collection("completions").document(request.getStudentName() + "_" + request.getCompletionDate().getTime())
-                    .delete()
+            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+            String managerId = currentUser != null ? currentUser.getUid() : "unknown";
+
+            db.collection("completions").document(request.getId())
+                    .update(
+                            "status", "rejected",
+                            "rejectedBy", managerId,
+                            "decisionAt", FieldValue.serverTimestamp()
+                    )
+
                     .addOnSuccessListener(aVoid -> {
-                        Toast.makeText(context, "הבקשה נמחקה", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "הבקשה נדחתה", Toast.LENGTH_SHORT).show();
                         requests.remove(position);
                         notifyItemRemoved(position);
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(context, "שגיאה בעדכון: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     });
         });
+
+
     }
 
     @Override
@@ -88,4 +151,10 @@ public class CompletionRequestAdapter extends RecyclerView.Adapter<CompletionReq
             btnReject = itemView.findViewById(R.id.btnReject);
         }
     }
+
+    private String getDayOfWeek(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("EEEE", new Locale("he", "IL"));
+        return sdf.format(date); // לדוגמה: "יום שלישי"
+    }
+
 }

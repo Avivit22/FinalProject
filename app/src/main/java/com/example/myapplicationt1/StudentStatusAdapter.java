@@ -2,6 +2,7 @@ package com.example.myapplicationt1;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -82,12 +83,22 @@ public class StudentStatusAdapter extends RecyclerView.Adapter<StudentStatusAdap
             tvStudentName.setText(status.getStudentName());
 
             //  אם notes כולל "השלמה" – נציג תווית אדומה
-            if (status.getNotes() != null && status.getNotes().contains("השלמה")) {
-                tvSpecialLabel.setText("(שיעור השלמה)");
-                tvSpecialLabel.setVisibility(View.VISIBLE);
+            if (status.getNotes() != null) {
+                if (status.getNotes().contains("שיעור השלמה")) {
+                    tvSpecialLabel.setText("(שיעור השלמה)");
+                    tvSpecialLabel.setTextColor(Color.RED);
+                    tvSpecialLabel.setVisibility(View.VISIBLE);
+                } else if (status.getNotes().contains("שיעור נוסף")) {
+                    tvSpecialLabel.setText("(שיעור נוסף)");
+                    tvSpecialLabel.setTextColor(Color.parseColor("#FF5722")); // כתום
+                    tvSpecialLabel.setVisibility(View.VISIBLE);
+                } else {
+                    tvSpecialLabel.setVisibility(View.GONE);
+                }
             } else {
                 tvSpecialLabel.setVisibility(View.GONE);
             }
+
 
             // Restore selection
             switch (status.getStatus()) {

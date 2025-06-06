@@ -151,7 +151,7 @@ public class ShowScheduleActivity extends AppCompatActivity {
     private void loadStudentsAndCompletionsForDay(String dayName, String selectedDateFormatted) {
         RecyclerView rvStudents = findViewById(R.id.rvStudents);
         List<String> studentNames = new ArrayList<>();
-        Set<String> completionNames = new HashSet<>();
+        Map<String, String> completionTypes = new HashMap<>();
 
         // המרה מ-String לתאריך
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
@@ -184,12 +184,15 @@ public class ShowScheduleActivity extends AppCompatActivity {
                             .addOnSuccessListener(completions -> {
                                 for (DocumentSnapshot doc : completions) {
                                     String name = doc.getString("studentName");
+                                    String type = doc.getString("type"); //  שיעור השלמה / שיעור נוסף
+
                                     if (name != null && !studentNames.contains(name)) {
                                         studentNames.add(name);
                                     }
-                                    if (name != null) {
-                                        completionNames.add(name); // יצוין כהשלמה
+                                    if (name != null && type != null) {
+                                        completionTypes.put(name, type); // שמירת סוג השיעור
                                     }
+
                                 }
 
                                 // שליפת חיסורים שצריך להסיר מהתאריך הזה
@@ -206,7 +209,7 @@ public class ShowScheduleActivity extends AppCompatActivity {
 
                                             // סידור והתצוגה
                                             Collections.sort(studentNames);
-                                            StudentAdapter adapter = new StudentAdapter(studentNames, completionNames);
+                                            StudentAdapter adapter = new StudentAdapter(studentNames, completionTypes);
                                             rvStudents.setAdapter(adapter);
                                         });
                             });

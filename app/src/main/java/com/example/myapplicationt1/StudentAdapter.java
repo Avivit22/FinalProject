@@ -1,5 +1,6 @@
 package com.example.myapplicationt1;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,17 +10,22 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
+
 
 public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentViewHolder> {
 
     private final List<String> studentNames;
-    private final Set<String> completionNames;
 
-    public StudentAdapter(List<String> studentNames, Set<String> completionNames) {
+    private final Map<String, String> completionTypes;
+
+
+
+    public StudentAdapter(List<String> studentNames, Map<String, String> completionTypes) {
         this.studentNames = studentNames;
-        this.completionNames = completionNames;
+        this.completionTypes = completionTypes;
     }
+
 
     @NonNull
     @Override
@@ -33,11 +39,19 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
         String name = studentNames.get(position);
         holder.tvName.setText(name);
 
-        if (completionNames.contains(name)) {
+        String type = completionTypes.get(name);
+        if ("שיעור השלמה".equals(type)) {
+            holder.tvCompletionLabel.setText("(שיעור השלמה)");
+            holder.tvCompletionLabel.setTextColor(Color.RED);
+            holder.tvCompletionLabel.setVisibility(View.VISIBLE);
+        } else if ("שיעור נוסף".equals(type)) {
+            holder.tvCompletionLabel.setText("(שיעור נוסף)");
+            holder.tvCompletionLabel.setTextColor(Color.parseColor("#FF9800")); // כתום
             holder.tvCompletionLabel.setVisibility(View.VISIBLE);
         } else {
             holder.tvCompletionLabel.setVisibility(View.GONE);
         }
+
     }
 
     @Override

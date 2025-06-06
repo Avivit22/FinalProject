@@ -53,14 +53,14 @@ public class AcceptRequestsActivity extends AppCompatActivity {
 
     private void loadRequestsFromFirestore() {
         db.collection("completions")
-                .whereEqualTo("requiresManagerApproval", true)
-                .whereEqualTo("approved", false)
+                .whereEqualTo("status", "pending")
                 .get()
                 .addOnSuccessListener(query -> {
                     requestList.clear();
                     for (DocumentSnapshot doc : query.getDocuments()) {
                         CompletionRequest request = doc.toObject(CompletionRequest.class);
                         if (request != null) {
+                            request.setId(doc.getId());
                             requestList.add(request);
                         }
                     }

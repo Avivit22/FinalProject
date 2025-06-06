@@ -101,6 +101,7 @@ public class CompletionClassActivity extends AppCompatActivity {
                 completionDate = date;
                 completionDateSelected.setText("התאריך שנבחר: " + date);
                 completionDateSelected.setVisibility(View.VISIBLE);
+                checkIfFormIsValid();
             });
         });
 
@@ -122,6 +123,7 @@ public class CompletionClassActivity extends AppCompatActivity {
         ImageView logoImage = findViewById(R.id.logoImage);
         logoImage.setOnClickListener(v -> routeUserBasedOnType());
 
+        saveButton.setEnabled(false);
     }
 
     private void loadStudentNames() {
@@ -139,6 +141,7 @@ public class CompletionClassActivity extends AppCompatActivity {
                     searchStudentView.setOnItemClickListener((parent, view, position, id) -> {
                         selectedStudentName = parent.getItemAtPosition(position).toString();
                         fetchRegularDayForStudent(selectedStudentName);
+                        checkIfFormIsValid();
                     });
                 });
     }
@@ -182,9 +185,14 @@ public class CompletionClassActivity extends AppCompatActivity {
         data.put("regularDay", regularDay);
         data.put("completionDate", parsedCompletionDate);
         data.put("missingDate", parsedMissingDate);  // זה יכול להיות null
+        data.put("status", (isManager || !requiresManagerApproval) ? "approved" : "pending");
         data.put("requiresManagerApproval", requiresManagerApproval);
-        data.put("approved", !requiresManagerApproval || isManager);
         data.put("submittedAt", FieldValue.serverTimestamp());
+        data.put("isCompletion", true);
+
+        if (!requiresManagerApproval || isManager) {
+            data.put("type", "שיעור השלמה"); //  נרשם כשיעור השלמה אוטומטית
+        }
 
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
@@ -199,7 +207,7 @@ public class CompletionClassActivity extends AppCompatActivity {
                 .set(data)
                 .addOnSuccessListener(docRef -> {
                     if (isManager) {
-                        Toast.makeText(this, "השיעור נשמר ואושר בהצלחה כמנהל", Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, "השיעור נשמר", Toast.LENGTH_LONG).show();
                     } else if (requiresManagerApproval) {
                         Toast.makeText(this, "הבקשה נשלחה לאישור מנהל", Toast.LENGTH_LONG).show();
                     } else {
@@ -282,5 +290,12 @@ public class CompletionClassActivity extends AppCompatActivity {
         findViewById(R.id.missing_date_button).setVisibility(View.GONE);
         findViewById(R.id.missing_date_label).setVisibility(View.GONE);
     }
+
+    //הפעלת הכפתור שמור רק כשיש גם תלמיד וגם תאריך
+    private void checkIfFormIsValid() {
+        boolean valid = !selectedStudentName.isEmpty() && !completionDate.isEmpty();
+        saveButton.setEnabled(valid);
+    }
+
 
 }

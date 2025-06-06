@@ -131,26 +131,37 @@ public class InsertStatusActivity extends AppCompatActivity {
                             studentStatuses.add(status);
                         }
 
-                        //  חניכים שמבצעים השלמה
+                        //  חניכים שמבצעים השלמה או שיעור נוסף
                         db.collection("completions")
                                 .whereEqualTo("completionDate", todayDateForQuery)
+                                .whereEqualTo("status", "approved")
                                 .get()
                                 .addOnSuccessListener(completions -> {
                                     for (DocumentSnapshot doc : completions.getDocuments()) {
                                         String name = doc.getString("studentName");
+                                        String type = doc.getString("type"); // שיעור השלמה / שיעור נוסף
+
                                         if (name == null) continue;
 
                                         boolean alreadyExists = studentStatuses.stream()
                                                 .anyMatch(s -> s.getStudentName().equals(name));
 
                                         if (!alreadyExists) {
+                                            String note = "";
+                                            if ("שיעור השלמה".equals(type)) {
+                                                note = "(שיעור השלמה)";
+                                            } else if ("שיעור נוסף".equals(type)) {
+                                                note = "(שיעור נוסף)";
+                                            }
+
                                             StudentStatus status = existingAttendance.containsKey(name)
                                                     ? existingAttendance.get(name)
-                                                    : new StudentStatus(name, "", false, "(שיעור השלמה)", todayDate);
+                                                    : new StudentStatus(name, "", false, note, todayDate);
 
                                             studentStatuses.add(status);
                                         }
                                     }
+
 
                                     //  חניכים שמחסירים היום
                                     db.collection("completions")
