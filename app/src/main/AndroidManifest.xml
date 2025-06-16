@@ -50,6 +50,8 @@
             android:exported="false" />
         <activity android:name=".CompletionClassActivity" />
         <activity android:name=".GuideMainPageActivity" />
+        <activity android:name=".NotificationActivity" />
+        <activity android:name=".PendingRequestsActivity" />
     </application>
 
 </manifest>

@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         // אתחול Firebase Auth ו-Firestore
         mAuth = FirebaseAuth.getInstance(); //אתחול שמאפשר שירות בדיקת התחברות
         db = FirebaseFirestore.getInstance(); //אתחול שמאפשר שמירה ושליפת נתוני משתמש

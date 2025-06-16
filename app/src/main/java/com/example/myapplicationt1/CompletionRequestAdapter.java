@@ -62,7 +62,8 @@ public class CompletionRequestAdapter extends RecyclerView.Adapter<CompletionReq
                             "status", "approved",
                             "type", "שיעור נוסף",
                             "approvedBy", managerId,
-                            "decisionAt", FieldValue.serverTimestamp()
+                            "decisionAt", FieldValue.serverTimestamp(),
+                            "seenByGuide", false
                     )
 
                     .addOnSuccessListener(aVoid -> {
@@ -116,7 +117,8 @@ public class CompletionRequestAdapter extends RecyclerView.Adapter<CompletionReq
                     .update(
                             "status", "rejected",
                             "rejectedBy", managerId,
-                            "decisionAt", FieldValue.serverTimestamp()
+                            "decisionAt", FieldValue.serverTimestamp(),
+                            "seenByGuide", false
                     )
 
                     .addOnSuccessListener(aVoid -> {

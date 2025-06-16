@@ -1,89 +1,128 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:padding="16dp"
-    android:background="#F1F1F1" >
+    android:background="#F1F1F1">
 
+    <!-- 🔔 פעמון עם Badge -->
+    <FrameLayout
+        android:id="@+id/notificationLayout"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp">
+
+        <ImageView
+            android:id="@+id/bellIcon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="8dp"
+            android:src="@drawable/ic_bell"
+            android:contentDescription="התראות"
+            android:scaleType="fitCenter"/>
+
+        <TextView
+            android:id="@+id/notificationBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="18dp"
+            android:minHeight="18dp"
+            android:padding="2dp"
+            android:gravity="center"
+            android:layout_gravity="top|end"
+            android:layout_marginEnd="2dp"
+            android:layout_marginTop="2dp"
+            android:background="@drawable/badge_circle"
+            android:text="2"
+            android:textColor="#FFFFFF"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+    </FrameLayout>
+
+
+
+    <!-- כותרת -->
     <TextView
         android:id="@+id/homePageTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="דף הבית - מדריך"
         android:textSize="30sp"
-        android:layout_marginBottom="50dp"
-        android:layout_marginTop="60dp"
         android:textColor="#494646"
-        android:layout_gravity="center"
         android:textStyle="bold"
-        />
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/notificationLayout"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="20dp" />
 
-
-    <Button
-        android:id="@+id/btnRegisterAttendance"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="רישום נוכחות לחוג של היום"
-        android:backgroundTint="#F8DC61"
-        android:textColor="#494646"
-        android:layout_marginBottom="40dp"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:elevation="40dp"/>
-
-    <Button
-        android:id="@+id/btnLessonRegistration"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="רישום לשיעור השלמה"
-        android:backgroundTint="#F8DC61"
-        android:textColor="#494646"
-        android:layout_marginBottom="40dp"
-        android:textSize="20sp"
-        android:textStyle="bold"/>
-
-    <Button
-        android:id="@+id/btnShowSchedule"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="צפייה בלוח החוגים"
-        android:backgroundTint="#F8DC61"
-        android:textColor="#424040"
-        android:elevation="20dp"
-        android:layout_marginBottom="40dp"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        />
-
-
-    <Button
-        android:id="@+id/btnAttendanceReport"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="הפקת דוחות נוכחות"
-        android:backgroundTint="#F8DC61"
-        android:textColor="#424040"
-        android:elevation="20dp"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        />
-
-    <Space
+    <!-- כפתורים -->
+    <LinearLayout
+        android:id="@+id/buttonContainer"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_below="@id/homePageTitle"
+        android:layout_marginTop="20dp">
 
+        <Button
+            android:id="@+id/btnRegisterAttendance"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:text="רישום נוכחות לחוג של היום"
+            android:backgroundTint="#F8DC61"
+            android:textColor="#494646"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="20dp"
+            android:elevation="40dp" />
+
+        <Button
+            android:id="@+id/btnLessonRegistration"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:text="רישום לשיעור השלמה"
+            android:backgroundTint="#F8DC61"
+            android:textColor="#494646"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="20dp" />
+
+        <Button
+            android:id="@+id/btnShowSchedule"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:text="צפייה בלוח החוגים"
+            android:backgroundTint="#F8DC61"
+            android:textColor="#424040"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="20dp"
+            android:elevation="20dp" />
+
+        <Button
+            android:id="@+id/btnAttendanceReport"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:text="הפקת דוחות נוכחות"
+            android:backgroundTint="#F8DC61"
+            android:textColor="#424040"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:elevation="20dp" />
+    </LinearLayout>
+
+    <!-- לוגו למטה -->
     <ImageView
         android:id="@+id/logoImage"
         android:layout_width="250dp"
         android:layout_height="250dp"
-        android:layout_gravity="center"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
         android:src="@drawable/logo"
-        android:alpha="0.6"/>
-
-</LinearLayout>
+        android:alpha="0.6" />
+</RelativeLayout>
