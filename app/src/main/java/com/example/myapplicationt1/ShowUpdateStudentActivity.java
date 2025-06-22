@@ -7,6 +7,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -26,6 +27,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -197,9 +199,28 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
                 Toast.makeText(this, "נא לבחור חניך תחילה", Toast.LENGTH_SHORT).show();
             }
         });
-        /*convertToGuideButton.setOnClickListener(v -> {
-            Toast.makeText(this, "פונקציית המרה למדריך עוד לא מומשה", Toast.LENGTH_SHORT).show();
-        });*/
+        convertToGuideButton.setOnClickListener(v -> {
+            Dialog dialog = new Dialog(this);
+            dialog.setContentView(R.layout.custom_convert_dialog);
+
+            // יישור RTL
+            dialog.getWindow().getDecorView().setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+
+            // התחברות לכפתורים
+            Button btnConfirm = dialog.findViewById(R.id.btnConfirm);
+            Button btnCancel = dialog.findViewById(R.id.btnCancel);
+
+            btnConfirm.setOnClickListener(v1 -> {
+                convertStudentToGuide();
+                dialog.dismiss();
+            });
+
+            btnCancel.setOnClickListener(v1 -> dialog.dismiss());
+
+            dialog.show();
+
+        });
+
     }
 
     //פונקציה לטעינת שמות כל החניכים מFIRESTORE והצגתם בשדה החיפוש עם השלמה אוטומטית
@@ -546,4 +567,51 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
         );
         datePickerDialog.show();  //הצגת הדיאלוג
     }
+
+
+    // פונקציה להמרת חניך למדריך
+    private void convertStudentToGuide() {
+        if (currentStudent == null || currentStudentDocumentId == null) return;
+
+        String newGuideId = currentStudentDocumentId; // מזהה המסמך של החניך
+
+        Map<String, Object> guideData = new HashMap<>();
+        guideData.put("uid", newGuideId);
+        guideData.put("fullName", currentStudent.getFullName());
+        guideData.put("phone", currentStudent.getPhone());
+        guideData.put("activeNumber", currentStudent.getActiveNumber());
+        guideData.put("email", ""); // או למלא אם יש
+        guideData.put("gender", currentStudent.getGender());
+        guideData.put("birthDate", currentStudent.getBirthDate());
+        guideData.put("dayOfWeek", currentStudent.getDayOfWeek());
+        guideData.put("joinDate", currentStudent.getJoinDate());
+        guideData.put("address", currentStudent.getAddress());
+        guideData.put("parent1Name", currentStudent.getParent1Name());
+        guideData.put("parent2Name", currentStudent.getParent2Name());
+        guideData.put("parentPhone", currentStudent.getParentPhone());
+        guideData.put("profileImageBase64", ""); // אם את משתמשת בתמונת פרופיל
+        guideData.put("userType", "guide");
+
+        // הוספה ל־users
+        db.collection("users").document(newGuideId)
+                .set(guideData)
+                .addOnSuccessListener(aVoid -> {
+                    // מחיקה מה־students
+                    db.collection("students").document(currentStudentDocumentId).delete();
+
+                    Toast.makeText(this, "החניך הומר למדריך בהצלחה", Toast.LENGTH_SHORT).show();
+
+                    // מעבר אוטומטי למסך המדריכים
+                    Intent intent = new Intent(ShowUpdateStudentActivity.this, ShowUpdateGuideActivity.class);
+                    intent.putExtra("guideActiveNumber", currentStudent.getActiveNumber());
+                    startActivity(intent);
+                    finish();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "שגיאה בהמרת חניך: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    Log.e("ConvertToGuide", "Error converting student to guide", e);
+                });
+    }
+
+
 }

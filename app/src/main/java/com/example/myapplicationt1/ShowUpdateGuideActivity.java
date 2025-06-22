@@ -120,6 +120,12 @@ public class ShowUpdateGuideActivity extends AppCompatActivity {
         initializeUI(); //אתחול כל רכיבי הXML
         setupListeners();  //הגדרת מאזינים לאירועים
         loadStaffNamesForAutoComplete(); //טעינת שמות מדריכים לשדה החיפוש והשלמה אוטומטית
+
+        String activeNumberFromIntent = getIntent().getStringExtra("guideActiveNumber");
+        if (activeNumberFromIntent != null && !activeNumberFromIntent.isEmpty()) {
+            searchStaffByActiveNumber(activeNumberFromIntent);
+        }
+
     }
 
     //פונקציה לאתחול כל רכיבי הממשק מקובץ הXML
@@ -655,4 +661,36 @@ public class ShowUpdateGuideActivity extends AppCompatActivity {
             spinner.setSelection(0);
         }
     }
+
+    private void searchStaffByActiveNumber(String activeNumber) {
+        clearGuideDetailsForm();
+        detailsGuideScrollView.setVisibility(View.GONE);
+        currentUserDocumentId = null;
+        currentUserData = null;
+
+        db.collection("users")
+                .whereEqualTo("activeNumber", activeNumber)
+                .whereEqualTo("userType", "guide")
+                .limit(1)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    if (!querySnapshot.isEmpty()) {
+                        DocumentSnapshot document = querySnapshot.getDocuments().get(0);
+                        currentUserDocumentId = document.getId();
+                        currentUserData = document.toObject(Guide.class);
+                        if (currentUserData != null) ((Guide) currentUserData).setUid(currentUserDocumentId);
+
+                        populateStaffDetails();
+                        detailsGuideScrollView.setVisibility(View.VISIBLE);
+                        Toast.makeText(this, "המדריך החדש נטען אוטומטית", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(this, "לא נמצא מדריך עם מספר פעיל זה", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "שגיאה בחיפוש מדריך לפי מספר פעיל", e);
+                    Toast.makeText(this, "שגיאה בחיפוש מדריך חדש", Toast.LENGTH_SHORT).show();
+                });
+    }
+
 }
