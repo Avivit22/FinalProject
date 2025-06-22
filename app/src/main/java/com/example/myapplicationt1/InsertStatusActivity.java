@@ -86,6 +86,7 @@ public class InsertStatusActivity extends AppCompatActivity {
 
         EditText searchEditText = findViewById(R.id.searchEditText);
         searchEditText.addTextChangedListener(new TextWatcher() {
+
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
@@ -134,7 +135,6 @@ public class InsertStatusActivity extends AppCompatActivity {
                         //  חניכים שמבצעים השלמה או שיעור נוסף
                         db.collection("completions")
                                 .whereEqualTo("completionDate", todayDateForQuery)
-                                .whereEqualTo("status", "approved")
                                 .get()
                                 .addOnSuccessListener(completions -> {
                                     for (DocumentSnapshot doc : completions.getDocuments()) {
@@ -142,6 +142,17 @@ public class InsertStatusActivity extends AppCompatActivity {
                                         String type = doc.getString("type"); // שיעור השלמה / שיעור נוסף
 
                                         if (name == null) continue;
+
+                                        // סינון לפי הצורך באישור
+                                        Boolean requiresApproval = doc.getBoolean("requiresManagerApproval");
+
+
+                                        // אם צריך אישור – תוודא שאושרה
+                                        if (requiresApproval != null && requiresApproval && !"approved".equals(doc.getString("status"))) {
+                                            continue;
+                                        }
+
+
 
                                         boolean alreadyExists = studentStatuses.stream()
                                                 .anyMatch(s -> s.getStudentName().equals(name));

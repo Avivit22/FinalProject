@@ -184,15 +184,25 @@ public class ShowScheduleActivity extends AppCompatActivity {
                             .addOnSuccessListener(completions -> {
                                 for (DocumentSnapshot doc : completions) {
                                     String name = doc.getString("studentName");
-                                    String type = doc.getString("type"); //  שיעור השלמה / שיעור נוסף
+                                    String type = doc.getString("type");
+                                    Boolean requiresApproval = doc.getBoolean("requiresManagerApproval");
+                                    String status = doc.getString("status");
 
-                                    if (name != null && !studentNames.contains(name)) {
+                                    // תנאים להופעה בלוח החוגים:
+                                    boolean shouldShow = false;
+                                    if (requiresApproval != null && requiresApproval) {
+                                        shouldShow = "approved".equals(status);
+                                    } else {
+                                        shouldShow = true; // לא נדרש אישור, תמיד נציג
+                                    }
+
+                                    if (shouldShow && name != null && !studentNames.contains(name)) {
                                         studentNames.add(name);
                                     }
-                                    if (name != null && type != null) {
-                                        completionTypes.put(name, type); // שמירת סוג השיעור
-                                    }
 
+                                    if (shouldShow && name != null && type != null) {
+                                        completionTypes.put(name, type);
+                                    }
                                 }
 
                                 // שליפת חיסורים שצריך להסיר מהתאריך הזה

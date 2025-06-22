@@ -1,12 +1,15 @@
 package com.example.myapplicationt1;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,11 +25,13 @@ public class CompletionRequestAdapter extends RecyclerView.Adapter<CompletionReq
     private final List<CompletionRequest> requests;
     private final Context context;
     private final FirebaseFirestore db;
+    private final boolean isHistoryMode;
 
-    public CompletionRequestAdapter(Context context, List<CompletionRequest> requests) {
+    public CompletionRequestAdapter(Context context, List<CompletionRequest> requests, boolean isHistoryMode) {
         this.context = context;
         this.requests = requests;
         this.db = FirebaseFirestore.getInstance();
+        this.isHistoryMode = isHistoryMode;
     }
 
     @NonNull
@@ -52,8 +57,6 @@ public class CompletionRequestAdapter extends RecyclerView.Adapter<CompletionReq
                 });
 
         holder.btnApprove.setOnClickListener(v -> {
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-
             FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
             String managerId = currentUser != null ? currentUser.getUid() : "unknown";
 
@@ -116,6 +119,7 @@ public class CompletionRequestAdapter extends RecyclerView.Adapter<CompletionReq
             db.collection("completions").document(request.getId())
                     .update(
                             "status", "rejected",
+                            "type", "שיעור נוסף",
                             "rejectedBy", managerId,
                             "decisionAt", FieldValue.serverTimestamp(),
                             "seenByGuide", false
@@ -131,7 +135,32 @@ public class CompletionRequestAdapter extends RecyclerView.Adapter<CompletionReq
                     });
         });
 
+        if (isHistoryMode) {
+            holder.btnApprove.setVisibility(View.GONE);
+            holder.btnReject.setVisibility(View.GONE);
 
+            // הצג סטטוס
+            holder.tvStatus.setVisibility(View.VISIBLE);
+            holder.tvStatus.setText("סטטוס: " + (request.getStatus().equals("approved") ? "אושר" : "נדחה"));
+
+            // כפתור עדכון
+            holder.btnUpdate.setVisibility(View.VISIBLE);
+            holder.btnUpdate.setOnClickListener(v -> showUpdateDialog(request, position));
+        } else {
+            holder.tvStatus.setVisibility(View.GONE);
+            holder.btnUpdate.setVisibility(View.GONE);
+        }
+
+        holder.tvStatus.setTextColor(
+                request.getStatus().equals("approved") ? Color.GREEN : Color.RED
+        );
+
+
+
+    }
+    private String getDayOfWeek(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("EEEE", new Locale("he", "IL"));
+        return sdf.format(date); // לדוגמה: "יום שלישי"
     }
 
     @Override
@@ -140,8 +169,8 @@ public class CompletionRequestAdapter extends RecyclerView.Adapter<CompletionReq
     }
 
     public static class RequestViewHolder extends RecyclerView.ViewHolder {
-        TextView tvStudentName, tvGuideName, tvCompletionDate, tvMissingDate;
-        Button btnApprove, btnReject;
+        TextView tvStudentName, tvGuideName, tvCompletionDate, tvMissingDate, tvStatus;
+        Button btnApprove, btnReject, btnUpdate;
 
         public RequestViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -151,12 +180,88 @@ public class CompletionRequestAdapter extends RecyclerView.Adapter<CompletionReq
             tvMissingDate = itemView.findViewById(R.id.tvMissingDate);
             btnApprove = itemView.findViewById(R.id.btnApprove);
             btnReject = itemView.findViewById(R.id.btnReject);
+            tvStatus = itemView.findViewById(R.id.tvStatus);
+            btnUpdate = itemView.findViewById(R.id.btnUpdate);
         }
     }
 
-    private String getDayOfWeek(Date date) {
-        SimpleDateFormat sdf = new SimpleDateFormat("EEEE", new Locale("he", "IL"));
-        return sdf.format(date); // לדוגמה: "יום שלישי"
+    private void showUpdateDialog(CompletionRequest request, int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View view = inflater.inflate(R.layout.dialog_update_request, null);
+        builder.setView(view);
+
+        AlertDialog dialog = builder.create();
+
+        TextView dialogTitle = view.findViewById(R.id.dialogTitle);
+        TextView dialogMessage = view.findViewById(R.id.dialogMessage);
+        Button btnConfirm = view.findViewById(R.id.btnConfirm);
+        Button btnCancel = view.findViewById(R.id.btnCancel);
+
+        // עדכון הטקסט לפי סטטוס
+        if (request.getStatus().equals("rejected")) {
+            btnConfirm.setText("אשר");
+            btnConfirm.setBackgroundTintList(ContextCompat.getColorStateList(context, android.R.color.holo_green_light));
+        } else if (request.getStatus().equals("approved")) {
+            btnConfirm.setText("דחה");
+            btnConfirm.setBackgroundTintList(ContextCompat.getColorStateList(context, android.R.color.holo_red_light));
+        }
+
+        // פעולה בעת לחיצה על כפתור אישור
+        btnConfirm.setOnClickListener(v -> {
+            if (request.getStatus().equals("rejected")) {
+                approveRequest(request, position);
+            } else {
+                rejectRequest(request, position);
+            }
+            dialog.dismiss();  // סגור את הדיאלוג לאחר הפעולה
+        });
+
+        // פעולה בעת לחיצה על ביטול
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+
+        dialog.show();
     }
+
+
+    private void approveRequest(CompletionRequest request, int position) {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        String managerId = currentUser != null ? currentUser.getUid() : "unknown";
+
+        db.collection("completions").document(request.getId())
+                .update(
+                        "status", "approved",
+                        "approvedBy", managerId,
+                        "decisionAt", FieldValue.serverTimestamp(),
+                        "seenByGuide", false
+                )
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(context, "הבקשה אושרה", Toast.LENGTH_SHORT).show();
+                    request.setStatus("approved");
+                    notifyItemChanged(position);
+                });
+    }
+
+    private void rejectRequest(CompletionRequest request, int position) {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        String managerId = currentUser != null ? currentUser.getUid() : "unknown";
+
+        db.collection("completions").document(request.getId())
+                .update(
+                        "status", "rejected",
+                        "rejectedBy", managerId,
+                        "decisionAt", FieldValue.serverTimestamp(),
+                        "seenByGuide", false
+                )
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(context, "הבקשה נדחתה", Toast.LENGTH_SHORT).show();
+                    request.setStatus("rejected");
+                    notifyItemChanged(position);
+                });
+    }
+
+
+
+
 
 }

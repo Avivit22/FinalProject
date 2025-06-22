@@ -52,6 +52,8 @@
         <activity android:name=".GuideMainPageActivity" />
         <activity android:name=".NotificationActivity" />
         <activity android:name=".PendingRequestsActivity" />
+        <activity android:name=".HistoryActivity" />
+
     </application>
 
 </manifest>
