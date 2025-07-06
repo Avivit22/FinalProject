@@ -123,11 +123,12 @@ public class InsertStatusActivity extends AppCompatActivity {
                     .addOnSuccessListener(query -> {
                         for (DocumentSnapshot doc : query.getDocuments()) {
                             String name = doc.getString("fullName");
+                            String activeNumber = doc.getString("activeNumber");
                             if (name == null) continue;
 
                             StudentStatus status = existingAttendance.containsKey(name)
                                     ? existingAttendance.get(name)
-                                    : new StudentStatus(name, "", false, "", todayDate);
+                                    : new StudentStatus(name, "", false, "", todayDate, activeNumber);
 
                             studentStatuses.add(status);
                         }
@@ -140,6 +141,8 @@ public class InsertStatusActivity extends AppCompatActivity {
                                     for (DocumentSnapshot doc : completions.getDocuments()) {
                                         String name = doc.getString("studentName");
                                         String type = doc.getString("type"); // שיעור השלמה / שיעור נוסף
+                                        String activeNumber = doc.getString("activeNumber");
+
 
                                         if (name == null) continue;
 
@@ -167,7 +170,7 @@ public class InsertStatusActivity extends AppCompatActivity {
 
                                             StudentStatus status = existingAttendance.containsKey(name)
                                                     ? existingAttendance.get(name)
-                                                    : new StudentStatus(name, "", false, note, todayDate);
+                                                    : new StudentStatus(name, "", false, note, todayDate, activeNumber);
 
                                             studentStatuses.add(status);
                                         }
@@ -264,22 +267,32 @@ public class InsertStatusActivity extends AppCompatActivity {
                 .addOnSuccessListener(query -> {
                     existingAttendance.clear();
                     for (DocumentSnapshot doc : query.getDocuments()) {
+                        String name = doc.getString("studentName");
+                        String statusValue = doc.getString("status");
+                        boolean toranValue = doc.getBoolean("toran") != null && doc.getBoolean("toran");
+                        String notesValue = doc.getString("notes") != null ? doc.getString("notes") : "";
+                        String dateValue = doc.getString("date");
+                        String activeNumberValue = doc.getString("activeNumber") != null ? doc.getString("activeNumber") : "";
+
                         StudentStatus status = new StudentStatus(
-                                doc.getString("studentName"),
-                                doc.getString("status"),
-                                doc.getBoolean("toran") != null && doc.getBoolean("toran"),
-                                doc.getString("notes") != null ? doc.getString("notes") : "",
-                                doc.getString("date")
+                                name,
+                                statusValue,
+                                toranValue,
+                                notesValue,
+                                dateValue,
+                                activeNumberValue
                         );
+
                         existingAttendance.put(status.getStudentName(), status);
                     }
-                    onComplete.run(); //  אחרי שסיים לטעון – ממשיך
+                    onComplete.run(); // ממשיך אחרי טעינה
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "שגיאה בטעינת נוכחות: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    onComplete.run(); // גם בשגיאה נמשיך
+                    onComplete.run(); // ממשיך גם במקרה של שגיאה
                 });
     }
+
 
     private void filterList(String query) {
         filteredStatuses.clear();

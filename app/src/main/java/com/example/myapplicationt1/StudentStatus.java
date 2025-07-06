@@ -10,17 +10,19 @@ public class StudentStatus {
     private boolean isToran;
     private String notes;
     private String date;       // למשל: "13/05/2025"
+    private String activeNumber;
 
     public StudentStatus() {
         // נדרש ע"י Firestore
     }
 
-    public StudentStatus(String studentName, String status, boolean isToran, String notes, String date) {
+    public StudentStatus(String studentName, String status, boolean isToran, String notes, String date, String activeNumber) {
         this.studentName = studentName;
         this.status = status;
         this.isToran = isToran;
         this.notes = notes;
         this.date = date;
+        this.activeNumber = activeNumber;
     }
 
     // Getters & Setters
@@ -73,6 +75,7 @@ public class StudentStatus {
         map.put("toran", isToran);
         map.put("notes", notes);
         map.put("date", date);
+        map.put("activeNumber", activeNumber);
         return map;
     }
 }
