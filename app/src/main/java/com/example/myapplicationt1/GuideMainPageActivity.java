@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Arrays;
@@ -21,13 +22,38 @@ public class GuideMainPageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.guide_main_page);
+        // מציאת הפעמון
         ImageView bellIcon = findViewById(R.id.bellIcon);
+        // מציאת ה-badge שמראה את מספר ההתראות
+        TextView notificationBadge = findViewById(R.id.notificationBadge);
 
         // activity_notifications.xml לחיצה על הפעמון תעביר לעמוד
         bellIcon.setOnClickListener(v -> {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+            if (currentUser != null) {
+                String uid = currentUser.getUid();
+
+                db.collection("completions")
+                        .whereEqualTo("submittedBy", uid)
+                        .whereEqualTo("seenByGuide", false)
+                        .get()
+                        .addOnSuccessListener(querySnapshot -> {
+                            for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                                doc.getReference().update("seenByGuide", true);
+                            }
+                        });
+            }
+
+            // פותח את העמוד
             Intent intent = new Intent(this, NotificationActivity.class);
             startActivity(intent);
         });
+
+        // קריאה ראשונית לבדוק האם יש התראות שלא נקראו
+        checkNotifications();
+
 
         //  לחיצה על כפתור "רישום נוכחות לחוג של היום" תעביר לעמוד insert_status.xml
         Button btnRegisterAttendance = findViewById(R.id.btnRegisterAttendance);
@@ -71,7 +97,7 @@ public class GuideMainPageActivity extends AppCompatActivity {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        TextView notificationBadge = findViewById(R.id.notificationBadge);
+
 
         if (currentUser != null) {
             String uid = currentUser.getUid();
@@ -91,5 +117,60 @@ public class GuideMainPageActivity extends AppCompatActivity {
                         }
                     });
         }
+
+        //  לחיצה על כפתור "התנתק מהמערכת" תעביר לעמוד activity_main.xml
+        Button btnLogout = findViewById(R.id.btnLogout);
+        btnLogout.setOnClickListener(v -> {
+            FirebaseAuth.getInstance().signOut();
+            Intent intent = new Intent(GuideMainPageActivity.this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+        });
+
     }
+
+    /**
+     * פונקציה זו מתבצעת בכל פעם שחוזרים למסך (לדוג' אחרי חזרה מהתראות)
+     * ומעדכנת מחדש את ה-badge של ההתראות
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkNotifications();
+    }
+
+    /**
+     * פונקציה שבודקת התראות שלא נקראו עבור המדריך ומעדכנת את ה-badge
+     */
+    private void checkNotifications() {
+        // יצירת חיבור ל-Firestore
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        // קבלת המשתמש הנוכחי
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        // מציאת ה-badge במסך
+        TextView notificationBadge = findViewById(R.id.notificationBadge);
+
+        if (currentUser != null) {
+            String uid = currentUser.getUid();
+
+            // חיפוש במסמך completions את כל מה שלא נקרא ע"י המדריך(seenByGuide = false)
+            db.collection("completions")
+                    .whereEqualTo("submittedBy", uid)
+                    .whereEqualTo("seenByGuide", false)
+                    .get()
+                    .addOnSuccessListener(querySnapshot -> {
+                        int unreadCount = querySnapshot.size();
+                        if (unreadCount > 0) {
+                            // אם יש התראות שלא נקראו - מציגים מספר
+                            notificationBadge.setText(String.valueOf(unreadCount));
+                            notificationBadge.setVisibility(View.VISIBLE);
+                        } else {
+                            // אם אין - מסתירים
+                            notificationBadge.setVisibility(View.GONE);
+                        }
+                    });
+        }
+    }
+
 }
