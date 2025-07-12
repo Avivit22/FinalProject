@@ -66,10 +66,12 @@ public class AddGuideActivity extends AppCompatActivity {
                         currentProfileBitmap = null;
                         imageUri = null;
 
+                        // בדיקה אם המשתמש בחר תמונה בהצלחה
                         if (result.getResultCode() == RESULT_OK && result.getData() != null && result.getData().getData() != null) {
                             imageUri = result.getData().getData();
                             Log.d(TAG, "Image selected: " + imageUri.toString());
                             try {
+                                // המרת התמונה ל-Bitmap והצגתה
                                 currentProfileBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
                                 profileImage.setImageBitmap(currentProfileBitmap);
                                 Log.d(TAG, "Bitmap created and set to ImageView for guide.");
@@ -90,10 +92,11 @@ public class AddGuideActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_guide);
 
+        // אתחול Firebase
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
-
+        // קישור רכיבי ה-XML
         fullNameInput = findViewById(R.id.fullNameInput);
         activeNumberInput = findViewById(R.id.activeNumberInput);
         emailInput = findViewById(R.id.emailInput);
@@ -110,6 +113,7 @@ public class AddGuideActivity extends AppCompatActivity {
         profileImage = findViewById(R.id.profileImage);
         uploadImageButton = findViewById(R.id.uploadImageButton);
 
+        // לחיצה על לוגו מחזירה לעמוד הראשי
         ImageView logoImage = findViewById(R.id.logoImage);
         logoImage.setOnClickListener(v -> {
             Intent intent = new Intent(AddGuideActivity.this, ManagerMainPageActivity.class);
@@ -118,6 +122,7 @@ public class AddGuideActivity extends AppCompatActivity {
             finish();
         });
 
+        // מאזינים לכפתורים
         birthDateButton.setOnClickListener(v -> openDatePickerDialog(birthDateButton));
         joinDateButton.setOnClickListener(v -> openDatePickerDialog(joinDateButton));
         View.OnClickListener imagePickerListener = v -> openGallery();
@@ -131,7 +136,12 @@ public class AddGuideActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * איסוף נתונים מהטופס, בדיקות ולידציה ראשונית
+     * והכנה לשמירת מדריך חדש
+     */
     private void startGuideAdditionProcess() {
+        // איסוף נתונים
         String fullName = fullNameInput.getText().toString().trim();
         String activeNumber = activeNumberInput.getText().toString().trim();
         String email = emailInput.getText().toString().trim();
@@ -146,6 +156,7 @@ public class AddGuideActivity extends AppCompatActivity {
         String birthDate = birthDateButton.getText().toString();
         String joinDate = joinDateButton.getText().toString();
 
+        // ולידציה ראשונית
         if (TextUtils.isEmpty(fullName) || TextUtils.isEmpty(activeNumber) || TextUtils.isEmpty(email) || TextUtils.isEmpty(phone)) {
             Toast.makeText(this, "נא למלא שם מלא, מספר פעיל, מייל וטלפון", Toast.LENGTH_LONG).show();
             return;
@@ -160,9 +171,9 @@ public class AddGuideActivity extends AppCompatActivity {
             return;
         }
 
-        addButton.setEnabled(false);
+        addButton.setEnabled(false);  // חסימת כפתור למניעת לחיצות כפולות
 
-
+        // בניית Map עם כל הנתונים
         Map<String, Object> guideData = new HashMap<>();
         guideData.put("fullName", fullName);
         guideData.put("activeNumber", activeNumber);
@@ -179,7 +190,7 @@ public class AddGuideActivity extends AppCompatActivity {
         guideData.put("parent2Name", parent2Name);
         guideData.put("parentPhone", parentPhone);
 
-
+        // המרת תמונה ל-Base64 במידה ונבחרה
         String base64Image = "";
         if (currentProfileBitmap != null) {
             try {
@@ -203,10 +214,14 @@ public class AddGuideActivity extends AppCompatActivity {
         }
         guideData.put("profileImageBase64", base64Image);
 
+        // יצירת משתמש Auth ושמירת הנתונים
         createUserAndSaveData(guideData);
     }
 
-
+    /**
+     * יצירת משתמש Firebase Auth למדריך
+     * ואז קריאה לשמירת הנתונים ב-Firestore
+     */
     private void createUserAndSaveData(Map<String, Object> guideData) {
         String email = (String) guideData.get("email");
         if (email == null) {
@@ -247,7 +262,9 @@ public class AddGuideActivity extends AppCompatActivity {
                 });
     }
 
-
+    /**
+     * שמירת נתוני המדריך ב-Firestore
+     */
     private void saveDataToFirestore(String userId, Map<String, Object> guideData) {
         Log.d(TAG, "Saving final guide data to Firestore for UID: " + userId);
         Log.d(TAG, "Guide Data to save: " + guideData.toString().substring(0, Math.min(guideData.toString().length(), 300)) + "...");
@@ -270,12 +287,18 @@ public class AddGuideActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * מאפשר מחדש את כפתור ההוספה במקרה של כישלון
+     */
     private void enableAddButton() {
         if (addButton != null) {
             addButton.setEnabled(true);
         }
     }
 
+    /**
+     * פתיחת דיאלוג בחירת תאריך
+     */
     private void openDatePickerDialog(Button button) {
         final Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR); int month = calendar.get(Calendar.MONTH); int day = calendar.get(Calendar.DAY_OF_MONTH);
@@ -287,6 +310,9 @@ public class AddGuideActivity extends AppCompatActivity {
         datePickerDialog.show();
     }
 
+    /**
+     * פתיחת גלריה לבחירת תמונה
+     */
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         intent.setType("image/*");

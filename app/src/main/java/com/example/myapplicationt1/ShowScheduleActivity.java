@@ -27,6 +27,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * פעילות להצגת לוח חוגים לפי יום נבחר, כולל מדריכים ותלמידים.
+ */
 public class ShowScheduleActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
@@ -41,7 +44,7 @@ public class ShowScheduleActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
-        // לוגו ניווט
+        // לחיצה על לוגו — מעבר למסך הראשי לפי סוג המשתמש
         ImageView logoImage = findViewById(R.id.logoImage);
         logoImage.setOnClickListener(v -> routeUserBasedOnType());
 
@@ -59,18 +62,25 @@ public class ShowScheduleActivity extends AppCompatActivity {
         scheduleMap.put("FRIDAY", "16:30 - 14:30");
         scheduleMap.put("SATURDAY", "אין חוגים");
 
-
+        // מאזין לבחירת תאריך בלוח
         calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
             Calendar calendar = Calendar.getInstance();
             calendar.set(year, month, dayOfMonth);
 
+            // שם יום באנגלית
             String dayNameEnglish = calendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.ENGLISH).toUpperCase();
+
+            // שם יום בעברית
             String dayNameHebrew = convertDayToHebrew(dayNameEnglish); // נוסיף תרגום לעברית
+
+            // תאריך נבחר בפורמט dd/MM/yyyy
             String selectedDateFormatted = dayOfMonth + "/" + (month + 1) + "/" + year;
 
+            // עדכון שעות החוג בתצוגה
             String schedule = scheduleMap.getOrDefault(dayNameEnglish, "אין חוגים ביום זה");
             tvSchedule.setText("שעות החוג: " + schedule);
 
+            // טעינת מדריכים ותלמידים
             loadGuidesForDay(dayNameHebrew); // נשלח את השם בעברית לשאילתה!
             loadStudentsAndCompletionsForDay(dayNameHebrew, selectedDateFormatted);
 
@@ -83,7 +93,9 @@ public class ShowScheduleActivity extends AppCompatActivity {
         rvInstructors.setAdapter(adapter);
     }
 
-    // ניווט לפי סוג משתמש
+    /**
+     * פונקציה לנווט חזרה לדף הראשי לפי סוג המשתמש.
+     */
     private void routeUserBasedOnType() {
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
@@ -111,6 +123,9 @@ public class ShowScheduleActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * פונקציה להמרת שם יום באנגלית לעברית.
+     */
     private String convertDayToHebrew(String englishDay) {
         switch (englishDay) {
             case "SUNDAY": return "ראשון";
@@ -124,6 +139,9 @@ public class ShowScheduleActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * טעינת רשימת מדריכים עבור יום ספציפי.
+     */
     private void loadGuidesForDay(String dayName) {
         RecyclerView rvInstructors = findViewById(R.id.rvInstructors);
         List<String> guideNames = new ArrayList<>();
@@ -148,6 +166,9 @@ public class ShowScheduleActivity extends AppCompatActivity {
                         Toast.makeText(this, "שגיאה בשליפת מדריכים: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
+    /**
+     * טעינת תלמידים ושיעורי השלמה/חיסור ליום ותאריך ספציפי.
+     */
     private void loadStudentsAndCompletionsForDay(String dayName, String selectedDateFormatted) {
         RecyclerView rvStudents = findViewById(R.id.rvStudents);
         List<String> studentNames = new ArrayList<>();
@@ -163,7 +184,7 @@ public class ShowScheduleActivity extends AppCompatActivity {
             return;
         }
 
-        Date finalSelectedDate = parsedDate; // 💡 חייב להיות final עבור ה-Lambda
+        Date finalSelectedDate = parsedDate; // חייב להיות final עבור ה-Lambda
 
         // שליפת תלמידים קבועים
         db.collection("students")

@@ -15,22 +15,37 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * אדאפטר (Adapter) עבור RecyclerView להצגת התראות בממשק המשתמש.
+ * כל התראה מציגה מידע על בקשת שיעור נוסף (מאושר/נדחה), תאריך, סטטוס וכו'.
+ */
 public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapter.ViewHolder> {
 
     private final List<DocumentSnapshot> notifications;
 
+    /**
+     * בנאי שמקבל את רשימת ההתראות להצגה.
+     * @param notifications רשימת התראות
+     */
     public NotificationAdapter(List<DocumentSnapshot> notifications) {
         this.notifications = notifications;
     }
 
+    /**
+     * יצירת ViewHolder חדש (קריאה ראשונית כאשר אין פריטים ממוחזרים).
+     */
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        // תצוגת פריט בודד מתוך ה-XML
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_notification, parent, false);
         return new ViewHolder(view);
     }
 
+    /**
+     * קשירת נתונים לכל פריט ברשימה (לפי מיקום).
+     */
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         DocumentSnapshot doc = notifications.get(position);
@@ -39,12 +54,16 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         String status = doc.getString("status");
         String regularDay = doc.getString("regularDay");
 
+        // תאריך השיעור
         Timestamp ts = doc.getTimestamp("completionDate");
         String date = ts != null ? new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(ts.toDate()) : "תאריך לא ידוע";
 
+        // כותרת ההתראה
         holder.tvTitle.setText("בקשה עבור: " + student);
+        // תיאור התאריך והיום הקבוע
         holder.tvDate.setText("שיעור נוסף ליום " + regularDay + " בתאריך: " + date);
 
+        // סטטוס הבקשה
         if ("approved".equals(status)) {
             holder.tvStatus.setText("✅ אושר ע\"י מנהל");
             holder.tvStatus.setTextColor(Color.parseColor("#4CAF50"));
@@ -53,6 +72,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
             holder.tvStatus.setTextColor(Color.parseColor("#F44336"));
         }
 
+        // בדיקה אם ההתראה נקראה
         Boolean seen = doc.getBoolean("seenByGuide");
         if (seen == null || !seen) {
             holder.unreadDot.setVisibility(View.VISIBLE);
@@ -64,15 +84,20 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     }
 
 
-
+    /**
+     * כמות הפריטים ברשימה.
+     */
     @Override
     public int getItemCount() {
         return notifications.size();
     }
 
+    /**
+     * מחלקת ViewHolder פנימית המחזיקה הפניות ל-Views שבתוך פריט ההתראה.
+     */
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvTitle, tvDate, tvStatus;
-        View unreadDot;
+        TextView tvTitle, tvDate, tvStatus; // טקסטים עבור כותרת, תאריך, סטטוס
+        View unreadDot;                     // נקודה קטנה המופיעה אם לא נקרא
 
         public ViewHolder(View itemView) {
             super(itemView);

@@ -16,6 +16,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Arrays;
 
+/**
+ * עמוד הבית של המדריך.
+ * מאפשר ניווט מהיר לפונקציות עיקריות (נוכחות, שיעור השלמה, דוחות, לוח זמנים),
+ */
 public class GuideMainPageActivity extends AppCompatActivity {
 
     @Override

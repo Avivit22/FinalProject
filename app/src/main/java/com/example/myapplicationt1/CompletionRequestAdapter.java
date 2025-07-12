@@ -20,6 +20,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+/**
+ *  (RecyclerView) מותאם אישית להצגת בקשות שיעור השלמה ברשימה Adapter
+ * אחראי להציג מידע על כל בקשה, ולאפשר אישור או דחייה שלה מצד המנהל.
+ * תומך גם במצב היסטוריה (isHistoryMode) שבו אפשר לשנות סטטוס בקשות שכבר אושרו/נדחו.
+ */
 public class CompletionRequestAdapter extends RecyclerView.Adapter<CompletionRequestAdapter.RequestViewHolder> {
 
     private final List<CompletionRequest> requests;
@@ -27,6 +32,9 @@ public class CompletionRequestAdapter extends RecyclerView.Adapter<CompletionReq
     private final FirebaseFirestore db;
     private final boolean isHistoryMode;
 
+    /**
+     * בנאי.
+     */
     public CompletionRequestAdapter(Context context, List<CompletionRequest> requests, boolean isHistoryMode) {
         this.context = context;
         this.requests = requests;
@@ -37,6 +45,7 @@ public class CompletionRequestAdapter extends RecyclerView.Adapter<CompletionReq
     @NonNull
     @Override
     public RequestViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        // יצירת ViewHolder חדש עם פריסת item_completion_request
         View view = LayoutInflater.from(context).inflate(R.layout.item_completion_request, parent, false);
         return new RequestViewHolder(view);
     }
@@ -44,18 +53,23 @@ public class CompletionRequestAdapter extends RecyclerView.Adapter<CompletionReq
     @Override
     public void onBindViewHolder(@NonNull RequestViewHolder holder, int position) {
         CompletionRequest request = requests.get(position);
+
+        // הצגת שם החניך
         holder.tvStudentName.setText("שם החניך: " + request.getStudentName());
 
+        // עיבוד תאריכים
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         holder.tvCompletionDate.setText("תאריך השלמה: " + format.format(request.getCompletionDate()));
         holder.tvMissingDate.setText(request.getMissingDate() != null ? "חיסור: " + format.format(request.getMissingDate()) : "אין תאריך חיסור");
 
+        // הצגת שם המדריך
         db.collection("users").document(request.getSubmittedBy()).get()
                 .addOnSuccessListener(snapshot -> {
                     String guideName = snapshot.getString("fullName");
                     holder.tvGuideName.setText("מדריך: " + (guideName != null ? guideName : "לא ידוע"));
                 });
 
+        // לחיצה על אישור בקשה
         holder.btnApprove.setOnClickListener(v -> {
             FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
             String managerId = currentUser != null ? currentUser.getUid() : "unknown";
@@ -111,7 +125,7 @@ public class CompletionRequestAdapter extends RecyclerView.Adapter<CompletionReq
         });
 
 
-
+        // לחיצה על דחייה
         holder.btnReject.setOnClickListener(v -> {
             FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
             String managerId = currentUser != null ? currentUser.getUid() : "unknown";
@@ -135,6 +149,7 @@ public class CompletionRequestAdapter extends RecyclerView.Adapter<CompletionReq
                     });
         });
 
+        // מצב היסטוריה — הסתרת כפתורי אישור/דחייה, הצגת סטטוס וכפתור עדכון
         if (isHistoryMode) {
             holder.btnApprove.setVisibility(View.GONE);
             holder.btnReject.setVisibility(View.GONE);
@@ -151,6 +166,7 @@ public class CompletionRequestAdapter extends RecyclerView.Adapter<CompletionReq
             holder.btnUpdate.setVisibility(View.GONE);
         }
 
+        // צבע סטטוס
         holder.tvStatus.setTextColor(
                 request.getStatus().equals("approved") ? Color.GREEN : Color.RED
         );
@@ -158,6 +174,10 @@ public class CompletionRequestAdapter extends RecyclerView.Adapter<CompletionReq
 
 
     }
+
+    /**
+     *   פונקציה למשיכת היום בשבוע לפי התאריך
+     */
     private String getDayOfWeek(Date date) {
         SimpleDateFormat sdf = new SimpleDateFormat("EEEE", new Locale("he", "IL"));
         return sdf.format(date); // לדוגמה: "יום שלישי"
@@ -168,6 +188,10 @@ public class CompletionRequestAdapter extends RecyclerView.Adapter<CompletionReq
         return requests.size();
     }
 
+
+    /**
+     * ViewHolder עבור פריטי הבקשות.
+     */
     public static class RequestViewHolder extends RecyclerView.ViewHolder {
         TextView tvStudentName, tvGuideName, tvCompletionDate, tvMissingDate, tvStatus;
         Button btnApprove, btnReject, btnUpdate;
@@ -185,6 +209,9 @@ public class CompletionRequestAdapter extends RecyclerView.Adapter<CompletionReq
         }
     }
 
+    /**
+     * הצגת דיאלוג עדכון סטטוס בקשה בהיסטוריה.
+     */
     private void showUpdateDialog(CompletionRequest request, int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater inflater = LayoutInflater.from(context);
@@ -223,7 +250,9 @@ public class CompletionRequestAdapter extends RecyclerView.Adapter<CompletionReq
         dialog.show();
     }
 
-
+    /**
+     * פונקציה לעדכון בקשה לאישור במצב היסטוריה.
+     */
     private void approveRequest(CompletionRequest request, int position) {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         String managerId = currentUser != null ? currentUser.getUid() : "unknown";
@@ -242,6 +271,9 @@ public class CompletionRequestAdapter extends RecyclerView.Adapter<CompletionReq
                 });
     }
 
+    /**
+     * פונקציה לעדכון בקשה לדחייה במצב היסטוריה.
+     */
     private void rejectRequest(CompletionRequest request, int position) {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         String managerId = currentUser != null ? currentUser.getUid() : "unknown";

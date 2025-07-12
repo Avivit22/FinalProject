@@ -26,7 +26,10 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 
-
+/**
+ * מסך רישום לשיעור השלמה (מדריך/מנהל)
+ * כולל בחירת תלמיד, תאריכים, ואופציה לאישור מנהל
+ */
 public class CompletionClassActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
@@ -46,7 +49,7 @@ public class CompletionClassActivity extends AppCompatActivity {
     private TextWatcher searchWatcher;
 
 
-
+    // ממשק פנימי שמחזיר תאריך שנבחר
     interface OnDateSelected {
         void onDateSelected(String date);
     }
@@ -57,7 +60,7 @@ public class CompletionClassActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.completion_class);
 
-        setFormEnabled(false); // ← השבתת הטופס כבר בהתחלה
+        setFormEnabled(false); // השבתת הטופס בהתחלה עד בחירת חניך
 
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
@@ -72,15 +75,13 @@ public class CompletionClassActivity extends AppCompatActivity {
                                 isManager = true;
                                 Button noButton = findViewById(R.id.no_button);
                                 noButton.setText("לא");
-                                requiresManagerApproval = false; // אוטומטי אצל מנהל
+                                requiresManagerApproval = false; // מאושר אוטומטית אצל מנהל
                             }
                         }
                     });
-
         }
 
-
-        // UI
+        // איתור רכיבים מה-XML
         searchStudentView = findViewById(R.id.search_student);
         regularDayText = findViewById(R.id.regular_day);
         completionDateSelected = findViewById(R.id.completion_date_selected);
@@ -93,9 +94,11 @@ public class CompletionClassActivity extends AppCompatActivity {
         Button missingDateButton = findViewById(R.id.missing_date_button);
         TextView missingDateLabel = findViewById(R.id.missing_date_label);
 
+        // בהתחלה הסתרת בחירת תאריך חיסור
         missingDateLabel.setVisibility(View.GONE);
         missingDateButton.setVisibility(View.GONE);
 
+        // לחיצה על "כן" מציגה בחירת תאריך חיסור
         yesButton.setOnClickListener(v -> {
             requiresManagerApproval = false;
             missingDateLabel.setVisibility(View.VISIBLE);
@@ -103,10 +106,11 @@ public class CompletionClassActivity extends AppCompatActivity {
             checkIfFormIsValid();
         });
 
+        // לחיצה על "לא" — לא נדרש אישור מנהל (כי המנהל מוסיף שיעור)
         noButton.setOnClickListener(v -> {
             requiresManagerApproval = !isManager;
 
-            // הסתרת תאריך החיסור
+            // הסתרת בחירת תאריך החיסור
             findViewById(R.id.missing_date_label).setVisibility(View.GONE);
             findViewById(R.id.missing_date_button).setVisibility(View.GONE);
             missingDateSelected.setVisibility(View.GONE);
@@ -122,6 +126,7 @@ public class CompletionClassActivity extends AppCompatActivity {
             }
         });
 
+        // בחירת תאריכי השלמה/חיסור
         completionDateButton.setOnClickListener(v -> {
             showMaterialDatePicker((date) -> {
                 completionDate = date;
@@ -141,18 +146,19 @@ public class CompletionClassActivity extends AppCompatActivity {
         });
 
 
-        // Load student names for AutoComplete
+        // טעינת שמות התלמידים לרשימת החיפוש
         loadStudentNames();
 
-        // שמירה
+        // כפתור שמירה
         saveButton.setOnClickListener(v -> saveCompletion());
 
-        // ניווט בלחיצה על לוגו
+        // לוגו — חזרה לדף הבית
         ImageView logoImage = findViewById(R.id.logoImage);
         logoImage.setOnClickListener(v -> routeUserBasedOnType());
 
-        saveButton.setEnabled(false);
+        saveButton.setEnabled(false); // מושבת בהתחלה
 
+        // צופה לשדה חיפוש תלמיד
         searchWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -174,7 +180,7 @@ public class CompletionClassActivity extends AppCompatActivity {
 
         searchStudentView.addTextChangedListener(searchWatcher);
 
-
+        // ניקוי שורת חיפוש בעת לחיצה על ה-X
         searchStudentView.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_UP) {
                 Drawable drawableEnd = searchStudentView.getCompoundDrawables()[2]; // ימני
@@ -195,16 +201,11 @@ public class CompletionClassActivity extends AppCompatActivity {
             }
             return false;
         });
-
-
-
-
-
-
-
-
     }
 
+    /**
+     * טעינת שמות התלמידים ל-AutoComplete
+     */
     private void loadStudentNames() {
         db.collection("students")
                 .get()
@@ -227,12 +228,22 @@ public class CompletionClassActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * הפעלה/השבתה של הטופס כולו
+     */
     private void setFormEnabled(boolean enabled) {
         LinearLayout formContainer = findViewById(R.id.formContainer);
         formContainer.setAlpha(enabled ? 1f : 0.4f);
         setViewAndChildrenEnabled(formContainer, enabled);
     }
 
+    /**
+     * הפעלת או השבתת כל הרכיבים (views) בתוך ViewGroup .
+     *נרצה לכבות/להפעיל טופס שלם בלחיצה אחת.
+     *
+     * @param view רכיב ראשי
+     * @param enabled true להפעלה, false להשבתה
+     */
     private void setViewAndChildrenEnabled(View view, boolean enabled) {
         view.setEnabled(enabled);
         if (view instanceof ViewGroup) {
@@ -243,7 +254,9 @@ public class CompletionClassActivity extends AppCompatActivity {
         }
     }
 
-
+    /**
+     * מביא את היום הקבוע של התלמיד
+     */
     private void fetchRegularDayForStudent(String studentName) {
         db.collection("students")
                 .whereEqualTo("fullName", studentName)
@@ -259,6 +272,9 @@ public class CompletionClassActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * טעינת תאריכים חסומים עבור התלמיד
+     */
     private void loadBlockedDatesForStudent(String studentName) {
         blockedDates.clear();
 
@@ -291,7 +307,9 @@ public class CompletionClassActivity extends AppCompatActivity {
                 });
     }
 
-
+    /**
+     * פונקציה לשמירת בקשת שיעור ההשלמה
+     */
     private void saveCompletion() {
 
         if (selectedStudentName.isEmpty() || completionDate.isEmpty()) {
@@ -299,6 +317,7 @@ public class CompletionClassActivity extends AppCompatActivity {
             return;
         }
 
+        // המרה לתאריכים
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         Date parsedCompletionDate;
         Date parsedMissingDate = null;
@@ -313,6 +332,7 @@ public class CompletionClassActivity extends AppCompatActivity {
             return;
         }
 
+        // יצירת מפה לשמירה
         Map<String, Object> data = new HashMap<>();
         data.put("studentName", selectedStudentName);
         data.put("regularDay", regularDay);
@@ -355,7 +375,12 @@ public class CompletionClassActivity extends AppCompatActivity {
     }
 
 
-
+    /**
+     * מציגה Date Picker בחירה של תאריך לשיעור השלמה, עם ולידציה מותאמת (CustomDateValidator)
+     * שמונעת בחירת תאריכים אסורים כמו יום קבוע או תאריכים שכבר תפוסים.
+     *
+     * @param listener מאזין שיקבל את התאריך שנבחר, בפורמט dd/MM/yyyy
+     */
     private void showMaterialDatePicker(OnDateSelected listener) {
         CalendarConstraints.DateValidator validator = new CustomDateValidator(regularDay, blockedDates);
 
@@ -368,6 +393,7 @@ public class CompletionClassActivity extends AppCompatActivity {
                 .setCalendarConstraints(constraints)
                 .build();
 
+        // מאזין ללחיצה על כפתור "אישור" בבחירת תאריך
         datePicker.addOnPositiveButtonClickListener(selection -> {
             Calendar cal = Calendar.getInstance();
             cal.setTimeInMillis(selection);
@@ -379,12 +405,24 @@ public class CompletionClassActivity extends AppCompatActivity {
     }
 
 
-
-
+    /**
+     * מסירה את המילה "יום" מהשם של יום בשבוע בעברית, לדוגמה:
+     * "יום חמישי" -> "חמישי"
+     *
+     * @param day יום בשבוע בעברית
+     * @return היום בלי "יום "
+     */
     private static String normalizeHebrewDay(String day) {
         return day.replace("יום ", "").trim();  // "יום חמישי" -> "חמישי"
     }
 
+
+    /**
+     * מציגה Date Picker עבור בחירת תאריך חיסור.
+     * מאשרת לבחור רק תאריכים שהם היום הקבוע של החניך או תאריכים שכבר קיימים כשיעורי השלמה.
+     *
+     * @param listener מאזין שיקבל את התאריך שנבחר, בפורמט dd/MM/yyyy
+     */
     private void showMissingDatePicker(OnDateSelected listener) {
         CalendarConstraints.DateValidator validator = new CalendarConstraints.DateValidator() {
             @Override
@@ -430,7 +468,10 @@ public class CompletionClassActivity extends AppCompatActivity {
         datePicker.show(getSupportFragmentManager(), "MISSING_DATE_PICKER");
     }
 
-    // פונקציה לשאיבת סוג המשתמש מ-Firestore והעברה בהתאם לעמוד הבית של מנהל או מדריך
+    //
+    /**
+     * פונקציה לשאיבת סוג המשתמש מ-Firestore והעברה בהתאם לעמוד הבית של מנהל או מדריך
+     */
     private void routeUserBasedOnType() {
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
@@ -457,9 +498,10 @@ public class CompletionClassActivity extends AppCompatActivity {
             Toast.makeText(CompletionClassActivity.this, "לא קיים משתמש מחובר", Toast.LENGTH_SHORT).show();
         }
     }
-
-    // פונקציה לאיפוס הטופס לאחר שמירה ל-FireStore
-    private void resetForm() {
+    /**
+    * פונקציה לאיפוס הטופס לאחר שמירה ל-FireStore
+    */
+     private void resetForm() {
         selectedStudentName = "";
         regularDay = "";
         completionDate = "";
@@ -487,7 +529,9 @@ public class CompletionClassActivity extends AppCompatActivity {
 
     }
 
-    //הפעלת הכפתור שמור רק כשיש גם תלמיד וגם תאריך
+    /**
+    הפעלת הכפתור שמור רק כשיש גם תלמיד וגם תאריך *
+    */
     private void checkIfFormIsValid() {
         boolean valid = !selectedStudentName.isEmpty()
                 && (!requiresManagerApproval ? !missingDate.isEmpty() : true)
@@ -497,10 +541,26 @@ public class CompletionClassActivity extends AppCompatActivity {
         noButton.setEnabled(!completionDate.isEmpty()); //  נועל את הכפתור "לא" עד שיש תאריך השלמה
     }
 
+
+    /**
+     * Validator מותאם אישית עבור MaterialDatePicker,
+     * משמש לבדוק אם התאריך הנבחר חוקי לפי קריטריונים שונים:
+     * 1️⃣ לא מאפשר לבחור תאריכים שעברו.
+     * 2️⃣ חוסם תאריכים שהם היום הקבוע של החניך (regularDay).
+     * 3️⃣ חוסם תאריכים שכבר תפוסים (blockedDates), למשל תאריכי שיעורים אחרים או השלמות.
+     *
+     * התאריך עובר בדיקה על בסיס היום בשבוע בעברית,
+     * והמחלקה גם תומכת ב-parcelable כדי לשמור ולהעביר אותה בעת הצורך.
+     */
     public static class CustomDateValidator implements CalendarConstraints.DateValidator {
         private final String regularDay;
         private final Set<String> blockedDates;
 
+        /**
+         * בונה Validator חדש עם יום קבוע ורשימת תאריכים חסומים.
+         * @param regularDay היום הקבוע של החניך (למשל "חמישי").
+         * @param blockedDates סט תאריכים בפורמט dd/MM/yyyy שאסור לבחור.
+         */
         public CustomDateValidator(String regularDay, Set<String> blockedDates) {
             this.regularDay = regularDay;
             this.blockedDates = blockedDates;

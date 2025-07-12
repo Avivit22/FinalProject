@@ -40,7 +40,10 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-
+/**
+ * פעילות הדוחות (ReportActivity)
+ * מציגה רשימת נוכחות עם יכולות סינון, מיון וייצוא לאקסל.
+ */
 public class ReportActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
@@ -154,7 +157,9 @@ public class ReportActivity extends AppCompatActivity {
 
     }
 
-    // טעינת הנתונים מה-DB עם סינון ומיון
+    /**
+     * טוען נתוני נוכחות מה-DB ומעדכן טבלה לפי סינון ומיון
+     */
     private void fetchAttendanceData() {
         db.collection("attendance")
                 .get()
@@ -215,7 +220,9 @@ public class ReportActivity extends AppCompatActivity {
     }
 
 
-    // עדכון הטבלה במסך לפי הבחירות
+    /**
+     * מעדכן את הטבלה לפי הרשימה המסוננת
+     */
     private void updateTable() {
         TableLayout tableLayout = findViewById(R.id.attendanceTable);
         tableLayout.removeAllViews();
@@ -292,7 +299,9 @@ public class ReportActivity extends AppCompatActivity {
         }
     }
 
-    // ניווט לדף מתאים לפי סוג משתמש
+    /**
+     * מנווט לדף המתאים לפי סוג המשתמש
+     */
     private void routeUserBasedOnType() {
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
@@ -319,7 +328,10 @@ public class ReportActivity extends AppCompatActivity {
         }
     }
 
-    // מחלקת עזר לאחסון שורה
+
+    /**
+     *   מחלקת עזר לאחסון שורה
+     */
     public static class AttendanceRecord {
         String studentName;
         String activeNumber;
@@ -336,7 +348,10 @@ public class ReportActivity extends AppCompatActivity {
         }
     }
 
-    // פונקציית ייצוא לאקסל
+
+    /**
+     * פונקציית ייצוא לאקסל
+     */
     private void exportToExcel(List<AttendanceRecord> records) {
         XSSFWorkbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Attendance");
@@ -381,7 +396,10 @@ public class ReportActivity extends AppCompatActivity {
         }
     }
 
-    // דיאלוג בחירת תאריך
+
+    /**
+     *  דיאלוג בחירת תאריך
+     */
     private void showDatePickerDialog() {
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
@@ -399,7 +417,10 @@ public class ReportActivity extends AppCompatActivity {
         datePickerDialog.show();
     }
 
-    // דיאלוג של פופ אפ לבחירת חודש ב"סינון לפי"
+
+    /**
+     * דיאלוג של פופ אפ לבחירת חודש ב"סינון לפי"
+     */
     private void showMonthPickerDialog() {
         LayoutInflater inflater = LayoutInflater.from(this);
         LinearLayout dialogView = (LinearLayout) inflater.inflate(R.layout.dialog_month_year_picker, null);
@@ -446,7 +467,10 @@ public class ReportActivity extends AppCompatActivity {
 
 
 
-    // פונקציה לקיצור התאריך שיכנס לטבלה
+
+    /**
+     *פונקציה לקיצור התאריך שיכנס לטבלה
+     */
     private String shortenDate(String date) {
         // אם התאריך בפורמט dd-MM-yyyy
         if (date.length() == 10 && date.charAt(2) == '-' && date.charAt(5) == '-') {
@@ -458,7 +482,10 @@ public class ReportActivity extends AppCompatActivity {
         return date;
     }
 
-    // פונקציה לעיבוד תאריך ממחרוזת
+
+    /**
+     *פונקציה לעיבוד תאריך ממחרוזת
+     */
     private java.util.Date parseDate(String dateStr) {
         try {
             return new java.text.SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).parse(dateStr);
@@ -469,7 +496,9 @@ public class ReportActivity extends AppCompatActivity {
     }
 
 
-    // דיאלוג סינון עם הצעות לשמות קיימים
+    /**
+     *דיאלוג סינון עם הצעות לשמות קיימים
+     */
     private void showNameFilterDialog(List<String> allNames) {
         androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
 

@@ -366,8 +366,10 @@ public class AddStudentActivity extends AppCompatActivity {
 
         Log.d(TAG, "onCreate started");
 
+        // אתחול Firestore
         db = FirebaseFirestore.getInstance();
 
+        // בדיקת התחברות
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             Log.i(TAG, "User is authenticated: " + FirebaseAuth.getInstance().getCurrentUser().getUid());
         } else {
@@ -375,11 +377,13 @@ public class AddStudentActivity extends AppCompatActivity {
             Toast.makeText(this, "שגיאה: יש להתחבר למערכת תחילה.", Toast.LENGTH_LONG).show();
         }
 
+        // קישור רכיבי UI
         birthDateButton = findViewById(R.id.birthDateButton);
         joinDateButton = findViewById(R.id.joinDateButton);
         profileImage = findViewById(R.id.profileImage);
         uploadImageButton = findViewById(R.id.uploadImageButton);
         addButton = findViewById(R.id.addButton);
+
         fullNameInput = findViewById(R.id.fullNameInput);
         activeNumberInput = findViewById(R.id.activeNumberInput);
         gradeInput = findViewById(R.id.grade);
@@ -391,6 +395,7 @@ public class AddStudentActivity extends AppCompatActivity {
         genderSpinner = findViewById(R.id.genderSpinner);
         dayOfWeekSpinner = findViewById(R.id.dayOfWeekSpinner);
 
+        // מאזין לבחירת מין
         genderSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {}
@@ -398,6 +403,7 @@ public class AddStudentActivity extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) {}
         });
 
+        // לוגו - מעבר חזרה לדף הבית
         ImageView logoImage = findViewById(R.id.logoImage);
         logoImage.setOnClickListener(v -> {
             Intent intent = new Intent(AddStudentActivity.this, ManagerMainPageActivity.class);
@@ -405,14 +411,19 @@ public class AddStudentActivity extends AppCompatActivity {
             finish();
         });
 
+        // לחיצה על כפתורי בחירת תאריכים
         birthDateButton.setOnClickListener(v -> openDatePicker(birthDateButton));
         joinDateButton.setOnClickListener(v -> openDatePicker(joinDateButton));
+
+        // לחיצה על התמונה או כפתור להעלאת תמונה
         profileImage.setOnClickListener(v -> openGallery());
         uploadImageButton.setOnClickListener(v -> openGallery());
 
+        // לחיצה על כפתור הוספה
         addButton.setOnClickListener(v -> {
             Log.d(TAG, "Add button clicked");
 
+            // ולידציה ראשונית - בדיקה בסיסית לוודא שהמשתמש לא שכח שדות חובה
             String fullName = fullNameInput.getText().toString().trim();
             String activeNumber = activeNumberInput.getText().toString().trim();
             String gradeVal = gradeInput.getText().toString().trim();
@@ -439,10 +450,13 @@ public class AddStudentActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate finished");
     }
 
-
+    /**
+     * שמירת פרטי החניך ב-Firestore, כולל המרה לתמונה Base64 אם יש תמונה
+     */
     private void saveStudentDataToFirestore(Bitmap profileBitmapToSave) {
         Log.d(TAG, "saveStudentDataToFirestore called.");
 
+        // איסוף ערכים מהשדות
         String fullName = fullNameInput.getText().toString().trim();
         String activeNumber = activeNumberInput.getText().toString().trim();
         String gradeVal = gradeInput.getText().toString().trim();
@@ -470,6 +484,7 @@ public class AddStudentActivity extends AppCompatActivity {
         studentData.put("birthDate", birthDateVal);
         studentData.put("joinDate", joinDateVal);
 
+        // המרת תמונה ל-Base64
         String base64Image = "";
         if (profileBitmapToSave != null) {
             try {
@@ -479,7 +494,7 @@ public class AddStudentActivity extends AppCompatActivity {
                 profileBitmapToSave.compress(Bitmap.CompressFormat.JPEG, quality, baos);
                 byte[] imageBytes = baos.toByteArray();
 
-
+                // בדיקת גודל לפני המרה
                 int maxSizeBytesBeforeEncoding = 500 * 1024;
                 if (imageBytes.length < maxSizeBytesBeforeEncoding) {
                     base64Image = Base64.encodeToString(imageBytes, Base64.DEFAULT);
@@ -499,6 +514,7 @@ public class AddStudentActivity extends AppCompatActivity {
 
         Log.i(TAG, "Attempting to save student data to Firestore: " + studentData.toString().substring(0, Math.min(studentData.toString().length(), 300)) + "...");
 
+        // שמירה בפיירסטור
         db.collection("students")
                 .add(studentData)
                 .addOnSuccessListener(documentReference -> {
@@ -516,6 +532,9 @@ public class AddStudentActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * פתיחת דיאלוג בחירת תאריך ועדכון כפתור
+     */
     private void openDatePicker(Button button) {
         final Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
@@ -529,6 +548,9 @@ public class AddStudentActivity extends AppCompatActivity {
         datePickerDialog.show();
     }
 
+    /**
+     * פתיחת גלריה לבחירת תמונה
+     */
     private void openGallery() {
         Log.d(TAG, "openGallery called");
         Intent intent = new Intent();
@@ -542,6 +564,9 @@ public class AddStudentActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * טיפול בתוצאה מהגלריה
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

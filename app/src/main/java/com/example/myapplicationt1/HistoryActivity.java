@@ -19,6 +19,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * מסך היסטוריית בקשות לשיעורים נוספים.
+ * מציג רשימת בקשות שאושרו או נדחו, עם אפשרות לצפות בהן ולעדכן סטטוס.
+ */
 public class HistoryActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
@@ -34,10 +38,14 @@ public class HistoryActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerViewHistory);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        // יצירת אדאפטר במצב היסטוריה (isHistoryMode = true)
         adapter = new CompletionRequestAdapter(this, allRequests, true); // מצב היסטוריה
         recyclerView.setAdapter(adapter);
 
+        // אתחול Firestore
         db = FirebaseFirestore.getInstance();
+
+        // טעינת הבקשות הקודמות ממסד הנתונים
         loadHistoryRequests();
 
         // מאזין ללחיצה על הלוגו, יעביר לעמוד אישור בקשות לשיעור נוסף
@@ -51,7 +59,10 @@ public class HistoryActivity extends AppCompatActivity {
         });
     }
 
-
+    /**
+     * טעינת כל הבקשות להיסטוריה מה-Firestore.
+     * מביא רק בקשות עם סטטוס מאושר (approved) או נדחה (rejected), מסוג "שיעור נוסף".
+     */
     private void loadHistoryRequests() {
         db.collection("completions")
                 .whereIn("status", Arrays.asList("approved", "rejected"))
@@ -62,11 +73,11 @@ public class HistoryActivity extends AppCompatActivity {
                     for (DocumentSnapshot doc : snapshot) {
                         CompletionRequest req = doc.toObject(CompletionRequest.class);
                         if (req != null) {
-                            req.setId(doc.getId());
+                            req.setId(doc.getId()); // שמירת מזהה המסמך
                             allRequests.add(req);
                         }
                     }
-                    adapter.notifyDataSetChanged();
+                    adapter.notifyDataSetChanged(); // עדכון הרשימה בתצוגה
                 });
     }
 }

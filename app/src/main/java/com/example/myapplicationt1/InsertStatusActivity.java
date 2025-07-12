@@ -29,9 +29,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import android.util.Log;
-
-
+/**
+ * מסך רישום סטטוס נוכחות של חניכים לפי היום הנוכחי.
+ * מאפשר למדריך או למנהל לעדכן נוכחות, לסמן תורנות ולהוסיף הערות.
+ */
 public class InsertStatusActivity extends AppCompatActivity {
 
     // משתנים עבור Firebase Auth ו-Firestore
@@ -61,9 +62,11 @@ public class InsertStatusActivity extends AppCompatActivity {
         SimpleDateFormat stringFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
         todayDate = stringFormat.format(new Date());
 
+        // פורמט תאריך לשאילתה ב-Firestore
         SimpleDateFormat firebaseFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         String todayDateFirestoreFormat = firebaseFormat.format(new Date());
 
+        // אתחול RecyclerView
         rvStudents = findViewById(R.id.rvStudentsStatus);
         rvStudents.setLayoutManager(new LinearLayoutManager(this));
         adapter = new StudentStatusAdapter(this, filteredStatuses);
@@ -77,6 +80,7 @@ public class InsertStatusActivity extends AppCompatActivity {
         // טען את החניכים שרלוונטיים להיום
         loadStudentsForToday(todayHebrewDay);
 
+        // כפתור שמירה
         Button saveButton = findViewById(R.id.saveButton);
         saveButton.setOnClickListener(v -> saveStatuses());
 
@@ -84,6 +88,7 @@ public class InsertStatusActivity extends AppCompatActivity {
         ImageView logoImage = findViewById(R.id.logoImage);
         logoImage.setOnClickListener(v -> routeUserBasedOnType());
 
+        // שדה חיפוש
         EditText searchEditText = findViewById(R.id.searchEditText);
         searchEditText.addTextChangedListener(new TextWatcher() {
 
@@ -100,6 +105,11 @@ public class InsertStatusActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * טעינת החניכים שמגיעים היום לפי היום הקבוע שלהם,
+     * וגם חניכים בשיעור השלמה או שיעור נוסף,
+     * לא מושך חניכים שיש להם השלמה ביום אחר במקום היום.
+     */
     private void loadStudentsForToday(String todayHebrewDay) {
         loadExistingAttendance(() -> {
             studentStatuses.clear();
@@ -116,7 +126,7 @@ public class InsertStatusActivity extends AppCompatActivity {
                 return;
             }
 
-            //  חניכים קבועים
+            // שליפת חניכים קבועים לפי יום
             db.collection("students")
                     .whereEqualTo("dayOfWeek", todayHebrewDay)
                     .get()
@@ -126,6 +136,7 @@ public class InsertStatusActivity extends AppCompatActivity {
                             String activeNumber = doc.getString("activeNumber");
                             if (name == null) continue;
 
+                            // בדיקה אם כבר קיים סטטוס
                             StudentStatus status = existingAttendance.containsKey(name)
                                     ? existingAttendance.get(name)
                                     : new StudentStatus(name, "", false, "", todayDate, activeNumber);
@@ -189,6 +200,7 @@ public class InsertStatusActivity extends AppCompatActivity {
                                                     }
                                                 }
 
+                                                // מיון א-ב
                                                 Collections.sort(studentStatuses, Comparator.comparing(StudentStatus::getStudentName));
                                                 filteredStatuses.addAll(studentStatuses);
                                                 adapter.notifyDataSetChanged();
@@ -199,7 +211,10 @@ public class InsertStatusActivity extends AppCompatActivity {
     }
 
 
-
+    /**
+     * שמירת סטטוסי הנוכחות בפיירבייס.
+     * מבצע איחוד (merge) כך שלא ידרוס שדות קיימים.
+     */
     private void saveStatuses() {
         List<StudentStatus> statuses = adapter.collectStatuses();
         for (StudentStatus s : statuses) {
@@ -247,6 +262,9 @@ public class InsertStatusActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * המרה של שם היום מאנגלית לעברית.
+     */
     private String convertDayToHebrew(String englishDay) {
         switch (englishDay) {
             case "SUNDAY": return "ראשון";
@@ -260,6 +278,11 @@ public class InsertStatusActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * טעינת נוכחות קיימת מה-DB.
+     * שומר את הנתונים במפה existingAttendance.
+     * קורא onComplete.run() בסוף.
+     */
     private void loadExistingAttendance(Runnable onComplete) {
         db.collection("attendance")
                 .whereEqualTo("date", todayDate)
@@ -294,6 +317,9 @@ public class InsertStatusActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * סינון רשימת החניכים לפי חיפוש.
+     */
     private void filterList(String query) {
         filteredStatuses.clear();
         for (StudentStatus status : studentStatuses) {

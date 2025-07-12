@@ -8,6 +8,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 
+/**
+ * עמוד הבית של המנהל עם כפתורים לגישה מהירה לכל הפעולות העיקריות:
+ * הוספת חניך/מדריך, עדכון פרטים, רישום נוכחות, דוחות, בקשות .
+ * כל כפתור מפנה לעמוד המתאים ב-Intent.
+ */
 public class ManagerMainPageActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

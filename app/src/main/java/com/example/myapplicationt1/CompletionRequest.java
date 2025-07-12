@@ -13,6 +13,7 @@ public class CompletionRequest {
     private String status;
     private String type;
 
+    // בנאי ריק - חובה עבור Firebase
     public CompletionRequest() {}
 
     // Getters

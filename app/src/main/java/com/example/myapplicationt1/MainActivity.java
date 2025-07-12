@@ -13,7 +13,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-
+/**
+ *עמוד ההתחברות הראשי
+ * עמוד זה מאפשר למשתמשים (מנהלים או מדריכים) להתחבר לאפליקציה.
+ */
 public class MainActivity extends AppCompatActivity {
 
     private EditText usernameEditText, passwordEditText;
@@ -115,7 +118,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    // פונקציה לאימות המשתמש ובדיקת סוג המשתמש במסד הנתונים
+    /**
+     *פונקציה לאימות המשתמש ובדיקת סוג המשתמש במסד הנתונים
+     */
     private void signInAndCheckUserType(String expectedType) {
         String email = usernameEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();
@@ -158,7 +163,9 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    //בדיקת פופאפ הזנת קוד מנהל
+    /**
+     *בדיקת פופאפ הזנת קוד מנהל
+     */
     private void showAdminCodePopup() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         View popupView = LayoutInflater.from(this).inflate(R.layout.popup_admin_code, null);
