@@ -395,6 +395,9 @@ public class AddStudentActivity extends AppCompatActivity {
         genderSpinner = findViewById(R.id.genderSpinner);
         dayOfWeekSpinner = findViewById(R.id.dayOfWeekSpinner);
 
+        // קרא לפונקציה לייצור מספר פעיל אוטומטי
+        generateNextActiveNumber();
+
         // מאזין לבחירת מין
         genderSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -593,4 +596,43 @@ public class AddStudentActivity extends AppCompatActivity {
             profileImage.setImageResource(R.drawable.default_profile);
         }
     }
+
+    /**
+     * פונקציה ליצירת מספר פעיל אוטומטי (מתחיל מ-1001)
+     */
+    private void generateNextActiveNumber() {
+        db.collection("students")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    int minStart = 1000; // מתחילים מ-1000, כדי שהראשון יהיה 1001
+                    int maxNumber = minStart;
+
+                    for (var doc : queryDocumentSnapshots.getDocuments()) {
+                        String numberStr = doc.getString("activeNumber");
+                        if (numberStr != null && !numberStr.isEmpty()) {
+                            try {
+                                int number = Integer.parseInt(numberStr);
+                                if (number > maxNumber) {
+                                    maxNumber = number;
+                                }
+                            } catch (NumberFormatException e) {
+                                Log.w(TAG, "activeNumber is not a valid integer: " + numberStr);
+                            }
+                        }
+                    }
+
+                    int newNumber = maxNumber + 1;
+                    activeNumberInput.setText(String.valueOf(newNumber));
+                    activeNumberInput.setEnabled(false); // ננעל למניעת שינוי ידני
+                    Log.d(TAG, "New activeNumber generated: " + newNumber);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Failed to fetch active numbers", e);
+                    int fallbackNumber = 1001;
+                    activeNumberInput.setText(String.valueOf(fallbackNumber));
+                    activeNumberInput.setEnabled(false);
+                    Toast.makeText(this, "בעיה בקבלת מספר פעיל - הוקצה ברירת מחדל " + fallbackNumber, Toast.LENGTH_LONG).show();
+                });
+    }
+
 }

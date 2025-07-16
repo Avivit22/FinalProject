@@ -113,6 +113,9 @@ public class AddGuideActivity extends AppCompatActivity {
         profileImage = findViewById(R.id.profileImage);
         uploadImageButton = findViewById(R.id.uploadImageButton);
 
+        // קרא לפונקציה לייצור מספר פעיל אוטומטי
+        generateNextActiveNumber();
+
         // לחיצה על לוגו מחזירה לעמוד הראשי
         ImageView logoImage = findViewById(R.id.logoImage);
         logoImage.setOnClickListener(v -> {
@@ -134,6 +137,8 @@ public class AddGuideActivity extends AppCompatActivity {
 
             startGuideAdditionProcess();
         });
+
+
     }
 
     /**
@@ -157,8 +162,8 @@ public class AddGuideActivity extends AppCompatActivity {
         String joinDate = joinDateButton.getText().toString();
 
         // ולידציה ראשונית
-        if (TextUtils.isEmpty(fullName) || TextUtils.isEmpty(activeNumber) || TextUtils.isEmpty(email) || TextUtils.isEmpty(phone)) {
-            Toast.makeText(this, "נא למלא שם מלא, מספר פעיל, מייל וטלפון", Toast.LENGTH_LONG).show();
+        if (TextUtils.isEmpty(fullName) || TextUtils.isEmpty(email) || TextUtils.isEmpty(phone)) {
+            Toast.makeText(this, "נא למלא שם מלא, מייל וטלפון", Toast.LENGTH_LONG).show();
             return;
         }
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
@@ -318,5 +323,48 @@ public class AddGuideActivity extends AppCompatActivity {
         intent.setType("image/*");
         imagePickerLauncher.launch(intent);
     }
+
+
+    /**
+     * פונקציה ליצירת מספר פעיל אוטומטי (מתחיל מ-2001)
+     */
+    private void generateNextActiveNumber() {
+        db.collection("users")
+                .whereEqualTo("userType", "guide") // סינון רק מדריכים
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    int minStart = 2000; // מתחילים מ-2000 כדי שהראשון יהיה 2001
+                    int maxNumber = minStart;
+
+                    for (var doc : queryDocumentSnapshots.getDocuments()) {
+                        String numberStr = doc.getString("activeNumber");
+                        if (numberStr != null && !numberStr.isEmpty()) {
+                            try {
+                                int number = Integer.parseInt(numberStr);
+                                if (number > maxNumber) {
+                                    maxNumber = number;
+                                }
+                            } catch (NumberFormatException e) {
+                                Log.w(TAG, "activeNumber is not a valid integer: " + numberStr);
+                            }
+                        }
+                    }
+
+                    int newNumber = maxNumber + 1;
+                    activeNumberInput.setText(String.valueOf(newNumber));
+                    activeNumberInput.setEnabled(false); // נעול לשינויים
+                    Log.d(TAG, "New activeNumber for guide generated: " + newNumber);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Failed to fetch guide active numbers", e);
+                    int fallbackNumber = 2001;
+                    activeNumberInput.setText(String.valueOf(fallbackNumber));
+                    activeNumberInput.setEnabled(false);
+                    Toast.makeText(this, "בעיה בקבלת מספר פעיל - הוקצה ברירת מחדל " + fallbackNumber, Toast.LENGTH_LONG).show();
+                });
+    }
+
+
+
 }
 
