@@ -45,6 +45,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * מסך עדכון מדריך: מאפשר חיפוש, צפייה, עדכון ומחיקת פרטי מדריכים ומנהלים.
+ * כולל תמיכה בתמונת פרופיל, ניהול תאריכים וחיבור ל-Firebase.
+ */
 public class ShowUpdateGuideActivity extends AppCompatActivity {
 
     private static final String TAG = "ShowUpdateGuideActivity"; //תג ללוג
@@ -120,9 +124,17 @@ public class ShowUpdateGuideActivity extends AppCompatActivity {
         initializeUI(); //אתחול כל רכיבי הXML
         setupListeners();  //הגדרת מאזינים לאירועים
         loadStaffNamesForAutoComplete(); //טעינת שמות מדריכים לשדה החיפוש והשלמה אוטומטית
+
+        String activeNumberFromIntent = getIntent().getStringExtra("guideActiveNumber");
+        if (activeNumberFromIntent != null && !activeNumberFromIntent.isEmpty()) {
+            searchStaffByActiveNumber(activeNumberFromIntent);
+        }
+
     }
 
-    //פונקציה לאתחול כל רכיבי הממשק מקובץ הXML
+    /**
+     *פונקציה לאתחול כל רכיבי הממשק מקובץ הXML
+     */
     private void initializeUI() {
 
         //חיבור לרכיבי הXML
@@ -163,7 +175,9 @@ public class ShowUpdateGuideActivity extends AppCompatActivity {
     }
 
 
-    //פונקציה לניקוי כל שדות הקלט בטופס, איפוס תמונה ומשתנים שקשורים אליה
+    /**
+     *פונקציה לניקוי כל שדות הקלט בטופס, איפוס תמונה ומשתנים שקשורים אליה
+     */
     private void clearGuideDetailsForm() {
 
         if (guideFullNameEditText != null) guideFullNameEditText.setText("");
@@ -200,8 +214,9 @@ public class ShowUpdateGuideActivity extends AppCompatActivity {
         if (guideParentPhoneLayout != null) guideParentPhoneLayout.setVisibility(View.VISIBLE);
     }
 
-
-    //פונקציה להגדרת מאזינים לרכיבי ממשק שונים
+    /**
+     *פונקציה להגדרת מאזינים לרכיבי ממשק שונים
+     */
     private void setupListeners() {
 
         ImageView logoImageView = findViewById(R.id.logoImage_guide);
@@ -242,7 +257,9 @@ public class ShowUpdateGuideActivity extends AppCompatActivity {
         }
     }
 
-    //פונקציה לטעינת שמות כל המדריכים הפעילים מהFIRESTORE והצגתם בשדה החיפוש עם השלמה אוטומטית
+    /**
+     *    פונקציה לטעינת שמות כל המדריכים הפעילים מהFIRESTORE והצגתם בשדה החיפוש עם השלמה אוטומטית
+     */
     private void loadStaffNamesForAutoComplete() {
         db.collection("users")  //גישה לcollection של users מתוך FIRESTORE
                 .whereIn("userType", Arrays.asList("guide", "manager"))  //סינון להצגת מדריכים ומנהלים בלבד
@@ -275,7 +292,9 @@ public class ShowUpdateGuideActivity extends AppCompatActivity {
                 });
     }
 
-    //פונקציה לחיפוש מדריך או מנהל לפי שם שהוקלד
+    /**
+     * פונקציה לחיפוש מדריך או מנהל לפי שם שהוקלד
+     */
     private void searchStaffByName(String staffName) {
         if (TextUtils.isEmpty(staffName)) {
             Toast.makeText(this, "נא להזין שם לחיפוש", Toast.LENGTH_SHORT).show();
@@ -329,7 +348,9 @@ public class ShowUpdateGuideActivity extends AppCompatActivity {
                 });
     }
 
-    //פונקציה למילוי שדות הטופס עם פרטי האדם שנבחר
+    /**
+     * פונקציה למילוי שדות הטופס עם פרטי האדם שנבחר
+     */
     private void populateStaffDetails() {
         if (currentUserData == null) return;
 
@@ -399,7 +420,9 @@ public class ShowUpdateGuideActivity extends AppCompatActivity {
         }
     }
 
-    //פונקציה לטעינת תמונה ממחרוזת base64 אל imageView ועדכון של bitmap
+    /**
+     *פונקציה לטעינת תמונה ממחרוזת base64 אל imageView ועדכון של bitmap
+     */
     private void loadBase64ImageToView(String base64String, ImageView imageView, boolean updateCurrentBitmapVar) {
         if (imageView == null) return;
         if (base64String == null || base64String.isEmpty()) {
@@ -436,7 +459,9 @@ public class ShowUpdateGuideActivity extends AppCompatActivity {
         }
     }
 
-    //פונקציה לשמירת שינויים בFIRESTORE
+    /**
+     *פונקציה לשמירת שינויים בFIRESTORE
+     */
     private void saveStaffChanges() {
         if (currentUserDocumentId == null || currentUserData == null) {
             Toast.makeText(this, "נא לבחור מדריך תחילה", Toast.LENGTH_SHORT).show();
@@ -531,7 +556,9 @@ public class ShowUpdateGuideActivity extends AppCompatActivity {
                 });
     }
 
-    //פונקציה להצגת פופאפ של הזנת תאריך עזיבה
+    /**
+     *פונקציה להצגת פופאפ של הזנת תאריך עזיבה
+     */
     private void showDeleteStaffPopup() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         View popupView = getLayoutInflater().inflate(R.layout.popup_delete, null);
@@ -583,7 +610,9 @@ public class ShowUpdateGuideActivity extends AppCompatActivity {
     }
 
 
-    //פונקציה לניתוב המשתמש למסך הראשי בהתאם לסוג שלו- מדריך או מנהל
+    /**
+     *פונקציה לניתוב המשתמש למסך הראשי בהתאם לסוג שלו- מדריך או מנהל
+     */
     private void routeUserBasedOnType() {
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
@@ -612,14 +641,18 @@ public class ShowUpdateGuideActivity extends AppCompatActivity {
         }
     }
 
-    //פונקציה לפתיחת גלריה בנייד לבחירת תמונה חדשה
+    /**
+     *פונקציה לפתיחת גלריה בנייד לבחירת תמונה חדשה
+     */
     private void openImagePicker() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         intent.setType("image/*");
         imagePickerLauncher.launch(intent);
     }
 
-    //פונקציה להצגת דיאלוג לבחירת תאריך ועדכון שדה טקסט עם התאריך שנבחר
+    /**
+     *פונקציה להצגת דיאלוג לבחירת תאריך ועדכון שדה טקסט עם התאריך שנבחר
+     */
     private void showDatePickerDialog(EditText targetEditText) {
         if (targetEditText == null) return;
         Calendar calendar = Calendar.getInstance();
@@ -639,7 +672,9 @@ public class ShowUpdateGuideActivity extends AppCompatActivity {
         datePickerDialog.show();
     }
 
-  //פונקציית עזר להגדרת בחירה בספינר
+    /**
+     *פונקציית עזר להגדרת בחירה בספינר
+     */
     private void setSpinnerSelection(Spinner spinner, String value, String[] array) {
         if (spinner == null) return;
         if (value != null && array != null) {
@@ -655,4 +690,39 @@ public class ShowUpdateGuideActivity extends AppCompatActivity {
             spinner.setSelection(0);
         }
     }
+
+    /**
+     * מחפשת מדריך לפי מספר פעיל, טוענת ומציגה את פרטיו אם נמצא.
+     */
+    private void searchStaffByActiveNumber(String activeNumber) {
+        clearGuideDetailsForm();
+        detailsGuideScrollView.setVisibility(View.GONE);
+        currentUserDocumentId = null;
+        currentUserData = null;
+
+        db.collection("users")
+                .whereEqualTo("activeNumber", activeNumber)
+                .whereEqualTo("userType", "guide")
+                .limit(1)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    if (!querySnapshot.isEmpty()) {
+                        DocumentSnapshot document = querySnapshot.getDocuments().get(0);
+                        currentUserDocumentId = document.getId();
+                        currentUserData = document.toObject(Guide.class);
+                        if (currentUserData != null) ((Guide) currentUserData).setUid(currentUserDocumentId);
+
+                        populateStaffDetails();
+                        detailsGuideScrollView.setVisibility(View.VISIBLE);
+                        Toast.makeText(this, "המדריך החדש נטען אוטומטית", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(this, "לא נמצא מדריך עם מספר פעיל זה", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "שגיאה בחיפוש מדריך לפי מספר פעיל", e);
+                    Toast.makeText(this, "שגיאה בחיפוש מדריך חדש", Toast.LENGTH_SHORT).show();
+                });
+    }
+
 }

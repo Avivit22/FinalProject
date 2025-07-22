@@ -9,10 +9,11 @@ public class CompletionRequest {
     private Date completionDate;
     private Date missingDate;
     private boolean requiresManagerApproval;
-    private boolean approved;
     private String id;
-    private boolean rejected;
+    private String status;
+    private String type;
 
+    // בנאי ריק - חובה עבור Firebase
     public CompletionRequest() {}
 
     // Getters
@@ -22,9 +23,9 @@ public class CompletionRequest {
     public Date getCompletionDate() { return completionDate; }
     public Date getMissingDate() { return missingDate; }
     public boolean isRequiresManagerApproval() { return requiresManagerApproval; }
-    public boolean isApproved() { return approved; }
     public String getId() { return id; }
-    public boolean isRejected() { return rejected; }
+    public String getStatus() { return status; }
+    public String getType() { return type; }
 
 
     // Setters
@@ -34,7 +35,7 @@ public class CompletionRequest {
     public void setCompletionDate(Date completionDate) { this.completionDate = completionDate; }
     public void setMissingDate(Date missingDate) { this.missingDate = missingDate; }
     public void setRequiresManagerApproval(boolean requiresManagerApproval) { this.requiresManagerApproval = requiresManagerApproval; }
-    public void setApproved(boolean approved) { this.approved = approved; }
     public void setId(String id) { this.id = id; }
-    public void setRejected(boolean rejected) { this.rejected = rejected; }
+    public void setStatus(String status) { this.status = status; }
+    public void setType(String type) { this.type = type; }
 }

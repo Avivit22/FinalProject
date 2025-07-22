@@ -20,9 +20,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+/**
+ * RecyclerView עבור הצגת מצב נוכחות של חניכים ברשימת Adapter.
+ * מאפשר עדכון סטטוס, תורן, הערות, ותצוגת פרטי חניך.
+ */
 public class StudentStatusAdapter extends RecyclerView.Adapter<StudentStatusAdapter.StatusViewHolder> {
 
-    private final List<StudentStatus> studentStatuses;
+    private final List<StudentStatus> studentStatuses; // רשימת המצב של כל החניכים
     private final Context context;
 
     public StudentStatusAdapter(Context context, List<StudentStatus> studentStatuses) {
@@ -34,6 +38,7 @@ public class StudentStatusAdapter extends RecyclerView.Adapter<StudentStatusAdap
     @NonNull
     @Override
     public StatusViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        // יצירת ה-View עבור כל חניך מתוך קובץ ה-layout
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_student_status, parent, false);
         return new StatusViewHolder(view, parent.getContext());
     }
@@ -41,6 +46,7 @@ public class StudentStatusAdapter extends RecyclerView.Adapter<StudentStatusAdap
 
     @Override
     public void onBindViewHolder(@NonNull StatusViewHolder holder, int position) {
+        // קשירת הנתונים של חניך ספציפי לתוך ה-ViewHolder
         StudentStatus status = studentStatuses.get(position);
         holder.bind(status);
     }
@@ -48,15 +54,22 @@ public class StudentStatusAdapter extends RecyclerView.Adapter<StudentStatusAdap
     @Override
     public int getItemCount() {
         return studentStatuses.size();
-    }
+    }  // מחזיר כמה חניכים יש לנו ברשימה
 
+    /**
+     * פונקציה לאיסוף הסטטוסים המעודכנים מהטופס.
+     */
     public List<StudentStatus> collectStatuses() {
         return studentStatuses;
     }
 
+    /**
+     * פנימי עבור הצגת חניך אחד ברשימה ViewHolder  .
+     */
     public class StatusViewHolder extends RecyclerView.ViewHolder {
         private final Context context;
 
+        // אלמנטים מה-layout
         TextView tvStudentName;
         TextView tvSpecialLabel;
         RadioGroup rgAttendanceStatus;
@@ -68,6 +81,7 @@ public class StudentStatusAdapter extends RecyclerView.Adapter<StudentStatusAdap
             super(itemView);
             this.context = context;
 
+            // אתחול Views
             tvStudentName = itemView.findViewById(R.id.tvStudentName);
             tvSpecialLabel = itemView.findViewById(R.id.tvSpecialLabel); // חדש
             rgAttendanceStatus = itemView.findViewById(R.id.rgAttendanceStatus);
@@ -79,10 +93,13 @@ public class StudentStatusAdapter extends RecyclerView.Adapter<StudentStatusAdap
             btnDetails = itemView.findViewById(R.id.btnDetails);
         }
 
+        /**
+         * פונקציה לקשירת נתוני הסטטוס של חניך אחד ל-View.
+         */
         public void bind(StudentStatus status) {
             tvStudentName.setText(status.getStudentName());
 
-            //  אם notes כולל "השלמה" – נציג תווית אדומה
+            //  אם notes כולל "השלמה" או "שיעור נוסף" – נציג תווית אדומה
             if (status.getNotes() != null) {
                 if (status.getNotes().contains("שיעור השלמה")) {
                     tvSpecialLabel.setText("(שיעור השלמה)");
@@ -100,7 +117,7 @@ public class StudentStatusAdapter extends RecyclerView.Adapter<StudentStatusAdap
             }
 
 
-            // Restore selection
+            // שחזור סטטוס נבחר
             switch (status.getStatus()) {
                 case "נוכח": rbPresent.setChecked(true); break;
                 case "חיסור": rbAbsent.setChecked(true); break;
@@ -110,7 +127,7 @@ public class StudentStatusAdapter extends RecyclerView.Adapter<StudentStatusAdap
             cbToran.setChecked(status.isToran());
             etNotes.setText(status.getNotes());
 
-            // Listeners
+            // מאזינים לעדכונים
             rgAttendanceStatus.setOnCheckedChangeListener((group, checkedId) -> {
                 if (checkedId == rbPresent.getId()) status.setStatus("נוכח");
                 else if (checkedId == rbAbsent.getId()) status.setStatus("חיסור");
@@ -126,6 +143,8 @@ public class StudentStatusAdapter extends RecyclerView.Adapter<StudentStatusAdap
                 }
                 @Override public void afterTextChanged(Editable s) {}
             });
+
+            // כפתור להצגת פרטי החניך
             btnDetails.setOnClickListener(v -> {
                 Intent intent = new Intent(itemView.getContext(), ShowUpdateStudentActivity.class);
                 intent.putExtra("STUDENT_NAME", status.getStudentName());

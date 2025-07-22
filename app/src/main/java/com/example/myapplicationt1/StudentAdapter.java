@@ -13,20 +13,27 @@ import java.util.List;
 import java.util.Map;
 
 
+/**
+ * מתאם (Adapter) עבור הצגת רשימת חניכים בלוח החוגים.
+ * מציג שם החניך וסוג ההשלמה (אם קיים).
+ */
 public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentViewHolder> {
 
     private final List<String> studentNames;
 
-    private final Map<String, String> completionTypes;
+    private final Map<String, String> completionTypes; // מפה המכילה את סוגי ההשלמות לפי שם החניך
 
-
-
+    /**
+     * בנאי המקבל רשימת שמות ומפת סוגי השלמות.
+     */
     public StudentAdapter(List<String> studentNames, Map<String, String> completionTypes) {
         this.studentNames = studentNames;
         this.completionTypes = completionTypes;
     }
 
-
+    /**
+     * יצירת ViewHolder חדש — טעינת Layout של פריט בודד.
+     */
     @NonNull
     @Override
     public StudentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -34,6 +41,9 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
         return new StudentViewHolder(view);
     }
 
+    /**
+     * קישור הנתונים לכל שורה ברשימה.
+     */
     @Override
     public void onBindViewHolder(@NonNull StudentViewHolder holder, int position) {
         String name = studentNames.get(position);
@@ -54,11 +64,18 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
 
     }
 
+    /**
+     * מחזיר את מספר הפריטים ברשימה.
+     * בלעדיו RecyclerView לא יודע כמה פריטים להציג.
+     */
     @Override
     public int getItemCount() {
         return studentNames.size();
     }
 
+    /**
+     * מחלקת ViewHolder פנימית — אחראית להחזיק את ה-View של כל תלמיד.
+     */
     static class StudentViewHolder extends RecyclerView.ViewHolder {
         TextView tvName, tvCompletionLabel;
 

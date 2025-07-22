@@ -16,11 +16,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * מחלקה שמציגה את כל הבקשות הממתינות לאישור עבור המדריך הנוכחי.
+ * במסך זה המדריך יכול לצפות בבקשות שעדיין לא אושרו או נדחו,
+ * כאשר כל בקשה מוצגת ברשימת RecyclerView.
+ */
 public class PendingRequestsActivity extends AppCompatActivity {
 
+    // אובייקטי Firebase
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
+
+    // רשימת מסמכים שמייצגת בקשות ממתינות
     private List<DocumentSnapshot> pendingList = new ArrayList<>();
+
+    // רכיבי UI
     private RecyclerView recyclerView;
     private PendingRequestsAdapter adapter;
     private TextView tvEmptyMessage;
@@ -33,20 +43,24 @@ public class PendingRequestsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pending_requests);
 
+        // אתחול Firebase
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
 
+        // הגדרת RecyclerView להצגת הבקשות
         recyclerView = findViewById(R.id.rvPending);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new PendingRequestsAdapter(pendingList);
         recyclerView.setAdapter(adapter);
 
+        // כפתור לוגו לחזרה למסך הקודם
         ImageView logo = findViewById(R.id.logoImage);
         logo.setOnClickListener(v -> finish());
 
+        // הודעה שמוצגת כשאין בקשות ממתינות
         tvEmptyMessage = findViewById(R.id.tvEmptyMessage);
 
-        // האם המשתמש מחובר
+        // מאזין לחיבור המשתמש, כדי לוודא שהוא מחובר
         authListener = firebaseAuth -> {
             if (firebaseAuth.getCurrentUser() != null) {
                 String uid = firebaseAuth.getCurrentUser().getUid();
@@ -58,16 +72,21 @@ public class PendingRequestsActivity extends AppCompatActivity {
             }
         };
 
+        // הוספת מאזין האימות
         mAuth.addAuthStateListener(authListener);
 
     }
 
 
+    /**
+     * טוען את כל הבקשות הממתינות שהוגשו ע"י המדריך הנוכחי
+     * @param uid מזהה המשתמש המחובר
+     */
     private void loadPendingRequests(String uid) {
         db.collection("completions")
-                .whereEqualTo("status", "pending")
-                .whereEqualTo("submittedBy", uid)
-                .orderBy("submittedAt", Query.Direction.DESCENDING)
+                .whereEqualTo("status", "pending")      // רק בקשות במצב ממתין
+                .whereEqualTo("submittedBy", uid)            // רק של המשתמש הנוכחי
+                .orderBy("submittedAt", Query.Direction.DESCENDING)   // סדר לפי זמן שליחה
                 .get()
                 .addOnSuccessListener(query -> {
                     pendingList.clear();
@@ -75,13 +94,13 @@ public class PendingRequestsActivity extends AppCompatActivity {
                     Log.d("PendingActivity", "Found: " + docs.size() + " docs");
 
                     if (docs.isEmpty()) {
-                        tvEmptyMessage.setVisibility(View.VISIBLE);
+                        tvEmptyMessage.setVisibility(View.VISIBLE);  // מציג הודעה אם אין בקשות
                     } else {
                         tvEmptyMessage.setVisibility(View.GONE);
-                        pendingList.addAll(docs);
+                        pendingList.addAll(docs);  // מוסיף לרשימה המקומית
                     }
 
-                    adapter.notifyDataSetChanged();
+                    adapter.notifyDataSetChanged();  // עדכון התצוגה
                 })
                 .addOnFailureListener(e -> {
                     Log.e("PendingActivity", "שגיאה: " + e.getMessage(), e);

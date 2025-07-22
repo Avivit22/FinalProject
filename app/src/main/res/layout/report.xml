@@ -1,362 +1,253 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- תמונת רקע -->
+    <!-- רקע -->
     <ImageView
         android:id="@+id/backgroundImage"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:src="@drawable/background1"
         android:scaleType="centerCrop"
-        android:alpha="0.2" />
+        android:alpha="0.2"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- קובץ עליון עם לוגו -->
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+    <!-- לוגו -->
+    <ImageView
+        android:id="@+id/logoImage"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/logo"
+        android:layout_marginStart="10dp"
         android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        android:gravity="center_vertical">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- תמונה בצד שמאל -->
-        <ImageView
-            android:id="@+id/logoImage"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_gravity="start"
-            android:src="@drawable/logo"
-            android:layout_marginLeft="10dp"/>
 
-        <!-- רווח בין התמונות -->
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
 
-    </LinearLayout>
-
-    <!-- טקסט כותרת -->
+    <!-- כותרת -->
     <TextView
         android:id="@+id/titleText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp"
         android:text="הפקת דוחות נוכחות"
+        android:textColor="#000000"
         android:textSize="20sp"
         android:textStyle="bold"
-        android:textColor="#000000"
-        />
+        android:layout_marginStart="77dp"
+        android:layout_marginBottom="13dp"
+        app:layout_constraintBottom_toBottomOf="@+id/logoImage"
+        app:layout_constraintStart_toEndOf="@+id/logoImage" />
 
-    <!-- שורת "מיון לפי:" עם כפתורים -->
+    <!-- בלוק כפתורים -->
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_below="@id/titleText"
-        android:layout_marginTop="15dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginLeft="20dp"
-        android:gravity="end"
-        android:weightSum="3">
-
-        <Button
-            android:id="@+id/sortByDateButton"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:text="תאריך"
-            android:textSize="16sp"
-            android:backgroundTint="#87F7DB61"
-            android:textColor="#000000"/>
-
-        <Button
-            android:id="@+id/sortByNameButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="שם חניך"
-            android:layout_marginLeft="12dp"
-            android:textSize="16sp"
-            android:backgroundTint="#87F7DB61"
-            android:textColor="#000000"/>
-
-
-        <TextView
-            android:text="מיון לפי:"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textColor="#000000"
-            android:layout_marginLeft="20dp"/>
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/filterByTotalAttendanceButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="סך הכל נוכחות לפי חודשים"
-        android:textSize="14sp"
-        android:layout_alignParentStart="true"
-        android:layout_marginLeft="105dp"
-        android:layout_marginTop="122dp"
-        android:backgroundTint="#87F7DB61"
-        android:textColor="#000000"
-        />
-
-    <!-- סינון לפי + שני כפתורים בשורה ראשונה ושני כפתורים בשורה שנייה -->
-    <LinearLayout
+        android:id="@+id/buttonsLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginTop="185dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginLeft="20dp"
-        android:gravity="end">
+        android:padding="10dp"
+        app:layout_constraintTop_toBottomOf="@+id/logoImage"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- שורה ראשונה: טקסט "סינון לפי:" + שני כפתורים -->
+        <!-- שורה ראשונה: מיון לפי -->
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:gravity="end">
+
+            <Button
+                android:id="@+id/sortByDateButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="תאריך"
+                android:backgroundTint="#87F7DB61"
+                android:textColor="#000000" />
+
+            <Button
+                android:id="@+id/sortByNameButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="שם חניך"
+                android:backgroundTint="#87F7DB61"
+                android:textColor="#000000" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="מיון לפי:"
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:layout_marginStart="8dp" />
+
+        </LinearLayout>
+
+        <!-- שורה שניה: סינון לפי -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end"
+            android:layout_marginTop="8dp">
 
             <Button
                 android:id="@+id/filterByDateButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
                 android:text="תאריך"
-                android:layout_marginLeft="8dp"
-                android:textSize="14sp"
                 android:backgroundTint="#87F7DB61"
-                android:textColor="#000000"/>
+                android:textColor="#000000" />
 
             <Button
                 android:id="@+id/filterByNameButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
                 android:text="שם חניך"
-                android:layout_marginLeft="8dp"
-                android:textSize="14sp"
                 android:backgroundTint="#87F7DB61"
-                android:textColor="#000000"/>
+                android:textColor="#000000" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="סינון לפי:"
-                android:textColor="#000000"
                 android:textSize="16sp"
-                android:layout_marginLeft="8dp"/>
+                android:textColor="#000000"
+                android:layout_marginStart="8dp" />
+
         </LinearLayout>
 
-        <!-- שורה שנייה עם שני כפתורים נוספים -->
+        <!-- שורה שלישית: תורן וחודש -->
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="2dp">
+            android:gravity="center"
+            android:layout_marginTop="4dp">
+
+            <Button
+                android:id="@+id/clearFilterButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#FF9800"
+                android:text="אפס סינון"
+                android:textColor="#FFFFFF" />
 
             <Button
                 android:id="@+id/filterByCleanlinessButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
                 android:text="תורן"
-                android:layout_marginRight="17dp"
-                android:textSize="14sp"
                 android:backgroundTint="#87F7DB61"
-                android:textColor="#000000"/>
+                android:textColor="#000000" />
 
             <Button
                 android:id="@+id/btnMonthFilter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
                 android:text="חודש"
-                android:layout_marginRight="67dp"
-                android:textSize="14sp"
                 android:backgroundTint="#87F7DB61"
-                android:textColor="#000000"
-                />
+                android:textColor="#000000" />
         </LinearLayout>
     </LinearLayout>
 
-
-    <!-- טבלת נוכחות -->
-    <!-- טבלת נוכחות -->
+    <!-- טבלה לכותרות בלבד -->
     <TableLayout
-        android:id="@+id/attendanceTable"
-        android:layout_width="match_parent"
+        android:id="@+id/headerTable"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_above="@id/exportToExcelButton"
-        android:layout_marginBottom="220dp"
         android:stretchColumns="*"
         android:padding="8dp"
-        >
+        app:layout_constraintTop_toBottomOf="@id/buttonsLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- כותרות טבלה -->
         <TableRow
             android:background="#004FA9"
+            android:minHeight="55dp"
             android:padding="8dp">
 
             <TextView
                 android:text="תורן"
-                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_weight="0.5"
                 android:textColor="#FFFFFF"
                 android:textStyle="bold"
                 android:gravity="center"
-                android:textSize="14sp"
-                android:padding="5dp"
-                android:layout_margin="2dp"/>
+                android:textSize="13sp" />
 
             <TextView
                 android:text="סטטוס נוכחות"
+                android:layout_width="0dp"
                 android:layout_weight="1"
                 android:textColor="#FFFFFF"
                 android:textStyle="bold"
                 android:gravity="center"
-                android:textSize="14sp"
-                android:padding="5dp"
-                android:layout_margin="2dp"/>
+                android:textSize="13sp" />
 
             <TextView
                 android:text="תאריך"
+                android:layout_width="0dp"
                 android:layout_weight="1"
                 android:textColor="#FFFFFF"
                 android:textStyle="bold"
                 android:gravity="center"
-                android:textSize="14sp"
-                android:padding="5dp"
-                android:layout_margin="2dp"/>
+                android:textSize="13sp" />
 
             <TextView
                 android:text="מספר פעיל"
+                android:layout_width="0dp"
                 android:layout_weight="1"
                 android:textColor="#FFFFFF"
                 android:textStyle="bold"
                 android:gravity="center"
-                android:textSize="14sp"
-                android:padding="5dp"
-                android:layout_margin="2dp"/>
+                android:textSize="13sp" />
 
             <TextView
                 android:text="שם"
-                android:layout_weight="2"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:textColor="#FFFFFF"
                 android:textStyle="bold"
                 android:gravity="center"
-                android:textSize="14sp"
-                android:padding="5dp"
-                android:layout_margin="2dp"/>
-
+                android:textSize="13sp" />
         </TableRow>
-
-        <!-- שורה 1 -->
-        <TableRow
-            android:background="#E0E0E0"
-            android:padding="8dp">
-
-            <TextView
-                android:text="✔"
-                android:layout_weight="1"
-                android:textColor="#008000"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:textSize="16sp"
-                android:padding="5dp"/>
-
-            <TextView
-                android:text="נוכח"
-                android:layout_weight="1"
-                android:textColor="#008000"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:textSize="14sp"
-                android:padding="5dp"/>
-
-            <TextView
-                android:text="31.12.2025"
-                android:layout_weight="1"
-                android:textColor="#000000"
-                android:gravity="center"
-                android:textSize="14sp"
-                android:padding="5dp"/>
-
-            <TextView
-                android:text="35146"
-                android:layout_weight="1"
-                android:textColor="#000000"
-                android:gravity="center"
-                android:textSize="14sp"
-                android:padding="5dp"/>
-
-            <TextView
-                android:text="כהן נתן"
-                android:layout_weight="2"
-                android:textColor="#000000"
-                android:gravity="center"
-                android:textSize="14sp"
-                android:padding="5dp"/>
-
-        </TableRow>
-
-        <!-- שורה 2 -->
-        <TableRow
-            android:background="#F8F8F8"
-            android:padding="8dp">
-
-            <TextView
-                android:text=""
-                android:layout_weight="1"
-                android:textColor="#000000"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:textSize="14sp"
-                android:padding="5dp"/>
-
-            <TextView
-                android:text="חיסור"
-                android:layout_weight="1"
-                android:textColor="#FF0000"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:textSize="14sp"
-                android:padding="5dp"/>
-
-            <TextView
-                android:text="31.12.2025"
-                android:layout_weight="1"
-                android:textColor="#000000"
-                android:gravity="center"
-                android:textSize="14sp"
-                android:padding="5dp"/>
-
-            <TextView
-                android:text="35507"
-                android:layout_weight="1"
-                android:textColor="#000000"
-                android:gravity="center"
-                android:textSize="14sp"
-                android:padding="5dp"/>
-
-            <TextView
-                android:text="לוי אורי"
-                android:layout_weight="2"
-                android:textColor="#000000"
-                android:gravity="center"
-                android:textSize="14sp"
-                android:padding="5dp"/>
-
-        </TableRow>
-
     </TableLayout>
 
 
+    <!-- גלילה רק לתוכן הטבלה -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/tableScrollView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/headerTable"
+        app:layout_constraintBottom_toTopOf="@id/exportToExcelButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TableLayout
+            android:id="@+id/attendanceTable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stretchColumns="*"
+            android:padding="8dp" />
+
+    </androidx.core.widget.NestedScrollView>
 
 
-
-
-    <!-- כפתור ייצוא לאקסל -->
+    <!-- כפתור ייצוא -->
     <Button
         android:id="@+id/exportToExcelButton"
         android:layout_width="wrap_content"
@@ -364,13 +255,10 @@
         android:text="ייצא לאקסל"
         android:textSize="16sp"
         android:backgroundTint="#004FA9"
-        android:textColor="#F8F8F8"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp"/>
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-
-
-
-
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

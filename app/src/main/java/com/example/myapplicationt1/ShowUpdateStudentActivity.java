@@ -7,6 +7,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -26,6 +27,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -47,7 +49,10 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+/**
+ * מסך ניהול חניך המאפשר חיפוש, צפייה ועדכון פרטים, מחיקת חניך או המרתו למדריך.
+ * כולל טיפול בתמונה, ניהול דיאלוגים וחיבור ל-Firebase.
+ */
 public class ShowUpdateStudentActivity extends AppCompatActivity {
 
     private static final String TAG = "ShowUpdateStudent";  //תג עבור לוגים- עוזר לזהות מאיזו מחלקה הודעות הלוג הגיעו
@@ -125,7 +130,10 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
 
     }
 
-    //פונקציה לאתחול כל רכיבי הUI שמוגדרים בקובץ הXML
+
+    /**
+     *פונקציה לאתחול כל רכיבי הUI שמוגדרים בקובץ הXML
+     */
     private void initializeUI() {
         searchStudentAutoComplete = findViewById(R.id.search_student);
         detailsScrollView = findViewById(R.id.detailsScrollView);
@@ -153,7 +161,9 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
         clearStudentDetailsForm();  //ניקוי השדות בטופס
     }
 
-    //פונקציה לניקוי כל השדות בטופס ואיפוס משתני התמונה
+    /**
+     *פונקציה לניקוי כל השדות בטופס ואיפוס משתני התמונה
+     */
     private void clearStudentDetailsForm() {
         fullNameEditText.setText("");
         organizationIdEditText.setText("");
@@ -175,7 +185,9 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
     }
 
 
-    //פונקציה להגדרת מאזינים לרכיבי UI
+    /**
+     *פונקציה להגדרת מאזינים לרכיבי UI
+     */
     private void setupListeners() {
         ImageView logoImage = findViewById(R.id.logoImage);
         logoImage.setOnClickListener(v -> routeUserBasedOnType()); //לחיצה על הלוגו תנתב על המשתמש לפי הסוג שלו
@@ -197,12 +209,33 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
                 Toast.makeText(this, "נא לבחור חניך תחילה", Toast.LENGTH_SHORT).show();
             }
         });
-        /*convertToGuideButton.setOnClickListener(v -> {
-            Toast.makeText(this, "פונקציית המרה למדריך עוד לא מומשה", Toast.LENGTH_SHORT).show();
-        });*/
+        convertToGuideButton.setOnClickListener(v -> {
+            Dialog dialog = new Dialog(this);
+            dialog.setContentView(R.layout.custom_convert_dialog);
+
+            // יישור RTL
+            dialog.getWindow().getDecorView().setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+
+            // התחברות לכפתורים
+            Button btnConfirm = dialog.findViewById(R.id.btnConfirm);
+            Button btnCancel = dialog.findViewById(R.id.btnCancel);
+
+            btnConfirm.setOnClickListener(v1 -> {
+                convertStudentToGuide();
+                dialog.dismiss();
+            });
+
+            btnCancel.setOnClickListener(v1 -> dialog.dismiss());
+
+            dialog.show();
+
+        });
+
     }
 
-    //פונקציה לטעינת שמות כל החניכים מFIRESTORE והצגתם בשדה החיפוש עם השלמה אוטומטית
+    /**
+     *פונקציה לטעינת שמות כל החניכים מFIRESTORE והצגתם בשדה החיפוש עם השלמה אוטומטית
+     */
     private void loadStudentNamesForAutoComplete() {
         db.collection("students")  //גישה לcollection students בתוך FIRESTORE
                 .get()  //קבלת כל המסמכים שבתוך collections students
@@ -224,7 +257,9 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
                 });
     }
 
-    //פונקציה לחיפוש חניך לפי שם שהוזן בשדה החיפוש
+    /**
+     *פונקציה לחיפוש חניך לפי שם שהוזן בשדה החיפוש
+     */
     private void searchStudentByName() {
         String studentNameToSearch = searchStudentAutoComplete.getText().toString().trim();
         if (TextUtils.isEmpty(studentNameToSearch)) {  //בדיקה אם הוזן שם חניך לחיפוש
@@ -265,7 +300,9 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
                 });
     }
 
-    //פונקציה למילוי שדות הטופס עם פרטי חניך שהתקבלו
+    /**
+     *פונקציה למילוי שדות הטופס עם פרטי חניך שהתקבלו
+     */
     private void populateStudentDetails(Student student) {
         if (student == null) {
             Log.e(TAG, "populateStudentDetails called with null student object.");
@@ -301,7 +338,9 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
         }
     }
 
-    //פונקציה לטעינת תמונה ממחרוזת Base64 אל ImageView ועדכון currentProfileBitmap
+    /**
+     *פונקציה לטעינת תמונה ממחרוזת Base64 אל ImageView ועדכון currentProfileBitmap
+     */
     private void loadBase64Image(String base64String, ImageView imageView) {
         if (base64String == null || base64String.isEmpty()) {
             Log.w(TAG, "loadBase64Image called with null or empty string.");
@@ -340,7 +379,9 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
         }
     }
 
-    //פונקציית עזר להגדרת הבחירה בספינר לפי ערך נתון
+    /**
+     *פונקציית עזר להגדרת הבחירה בספינר לפי ערך נתון
+     */
     private void setSpinnerSelection(Spinner spinner, String value, String[] array) {
         if (value != null && array != null) {
             for (int i = 0; i < array.length; i++) {
@@ -352,14 +393,18 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
         }
     }
 
-    //פונקציה לפתיחת גלריה לבחירת תמונה
+    /**
+     *פונקציה לפתיחת גלריה לבחירת תמונה
+     */
     private void openGalleryForNewImage() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         intent.setType("image/*");
         imagePickerLauncher.launch(intent);
     }
 
-    //פונקציה לשמירת שינויים בפרטי חניך לFIRESTORE
+    /**
+     *פונקציה לשמירת שינויים בפרטי חניך לFIRESTORE
+     */
     private void saveStudentChanges() {
         if (currentStudentDocumentId == null || currentStudent == null) {
             Toast.makeText(this, "נא לבחור חניך תחילה", Toast.LENGTH_SHORT).show();
@@ -459,7 +504,9 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
                 });
     }
 
-    // פונקציה לניתוב המשתמש למסך הראשי המתאים לפי סוג המשתמש (מנהל או מדריך)
+    /**
+     *פונקציה לניתוב המשתמש למסך הראשי המתאים לפי סוג המשתמש (מנהל או מדריך)
+     */
     private void routeUserBasedOnType() {
         FirebaseUser user = mAuth.getCurrentUser(); // קבלת המשתמש הנוכחי שמחובר
         if (user != null) {
@@ -489,7 +536,9 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
         }
     }
 
-    // פונקציה להצגת פופאפ לאישור מחיקה מהאפליקציה והשארה בFIRABASE וגם הזנה ושמירת תאריך עזיבה
+    /**
+     *פונקציה להצגת פופאפ לאישור מחיקה מהאפליקציה והשארה בFIRABASE וגם הזנה ושמירת תאריך עזיבה
+     */
     private void showDeletePopup() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         View popupView = getLayoutInflater().inflate(R.layout.popup_delete, null);
@@ -528,7 +577,9 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
         dialog.show();  // הצגת הפופאפ
     }
 
-    // פונקציה להצגת דיאלוג לבחירת תאריך
+    /**
+     *פונקציה להצגת דיאלוג לבחירת תאריך
+     */
     private void showDatePickerDialog(EditText targetEditText) {
         Calendar calendar = Calendar.getInstance();  //יצירת מופע של לוח שנה
         int year = calendar.get(Calendar.YEAR);
@@ -546,4 +597,53 @@ public class ShowUpdateStudentActivity extends AppCompatActivity {
         );
         datePickerDialog.show();  //הצגת הדיאלוג
     }
+
+
+    /**
+     *פונקציה להמרת חניך למדריך
+     */
+    private void convertStudentToGuide() {
+        if (currentStudent == null || currentStudentDocumentId == null) return;
+
+        String newGuideId = currentStudentDocumentId; // מזהה המסמך של החניך
+
+        Map<String, Object> guideData = new HashMap<>();
+        guideData.put("uid", newGuideId);
+        guideData.put("fullName", currentStudent.getFullName());
+        guideData.put("phone", currentStudent.getPhone());
+        guideData.put("activeNumber", currentStudent.getActiveNumber());
+        guideData.put("email", ""); // או למלא אם יש
+        guideData.put("gender", currentStudent.getGender());
+        guideData.put("birthDate", currentStudent.getBirthDate());
+        guideData.put("dayOfWeek", currentStudent.getDayOfWeek());
+        guideData.put("joinDate", currentStudent.getJoinDate());
+        guideData.put("address", currentStudent.getAddress());
+        guideData.put("parent1Name", currentStudent.getParent1Name());
+        guideData.put("parent2Name", currentStudent.getParent2Name());
+        guideData.put("parentPhone", currentStudent.getParentPhone());
+        guideData.put("profileImageBase64", ""); // אם את משתמשת בתמונת פרופיל
+        guideData.put("userType", "guide");
+
+        // הוספה ל־users
+        db.collection("users").document(newGuideId)
+                .set(guideData)
+                .addOnSuccessListener(aVoid -> {
+                    // מחיקה מה־students
+                    db.collection("students").document(currentStudentDocumentId).delete();
+
+                    Toast.makeText(this, "החניך הומר למדריך בהצלחה", Toast.LENGTH_SHORT).show();
+
+                    // מעבר אוטומטי למסך המדריכים
+                    Intent intent = new Intent(ShowUpdateStudentActivity.this, ShowUpdateGuideActivity.class);
+                    intent.putExtra("guideActiveNumber", currentStudent.getActiveNumber());
+                    startActivity(intent);
+                    finish();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "שגיאה בהמרת חניך: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    Log.e("ConvertToGuide", "Error converting student to guide", e);
+                });
+    }
+
+
 }
