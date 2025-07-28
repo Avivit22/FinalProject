@@ -44,6 +44,17 @@
     <string name="add_new_student_to_system">הוספת חניך חדש למערכת</string>
     <string name="add_new_guide_to_system">הוספת מדריך חדש למערכת</string>
     <string name="day_for_guide">יום בשבוע בו מדריך</string>
+    <string name="Registering_attendance_for_todays_class">רישום נוכחות לחוג של היום</string>
+    <string name="add_guide">הוספת מדריך</string>
+    <string name="add_student">הוספת חניך</string>
+    <string name="show_update_guide_details">צפייה ועדכון פרטי מדריך</string>
+    <string name="show_update_student_details">צפייה ועדכון פרטי חניך</string>
+    <string name="accept_requests">אישור בקשות לשיעור נוסף</string>
+    <string name="show_classes">צפייה בלוח החוגים</string>
+    <string name="registration_completion_class">רישום לשיעור השלמה</string>
+    <string name="reports">הפקת דוחות נוכחות</string>
+    <string name="home_page">דף הבית - מנהל</string>
+    <string name="sign_out">התנתקות</string>
     <string-array name="days_of_week">
         <item>ראשון</item>
         <item>שני</item>

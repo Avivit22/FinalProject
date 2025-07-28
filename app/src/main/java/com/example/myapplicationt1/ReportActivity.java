@@ -6,6 +6,7 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.widget.ArrayAdapter;
@@ -383,6 +384,7 @@ public class ReportActivity extends AppCompatActivity {
             // תיקיית files הפנימית של האפליקציה
             File dir = getFilesDir();
             File file = new File(dir, fileName);
+
 
             FileOutputStream fos = new FileOutputStream(file);
             workbook.write(fos);
