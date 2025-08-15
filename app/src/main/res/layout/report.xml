@@ -29,13 +29,12 @@
         app:layout_constraintTop_toTopOf="parent" />
 
 
-
     <!-- כותרת -->
     <TextView
         android:id="@+id/titleText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="הפקת דוחות נוכחות"
+        android:text="@string/showReports"
         android:textColor="#000000"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -67,7 +66,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:text="תאריך"
+                android:text="@string/date"
                 android:backgroundTint="#87F7DB61"
                 android:textColor="#000000" />
 
@@ -76,7 +75,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:text="שם חניך"
+                android:text="@string/studentName"
                 android:backgroundTint="#87F7DB61"
                 android:textColor="#000000" />
 
@@ -84,7 +83,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="מיון לפי:"
+                android:text="@string/sortBy"
                 android:textSize="16sp"
                 android:textColor="#000000"
                 android:layout_marginStart="8dp" />
@@ -104,7 +103,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:text="תאריך"
+                android:text="@string/date"
                 android:backgroundTint="#87F7DB61"
                 android:textColor="#000000" />
 
@@ -113,14 +112,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:text="שם חניך"
+                android:text="@string/studentName"
                 android:backgroundTint="#87F7DB61"
                 android:textColor="#000000" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="סינון לפי:"
+                android:text="@string/filterBy"
                 android:textSize="16sp"
                 android:textColor="#000000"
                 android:layout_marginStart="8dp" />
@@ -140,7 +139,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="#FF9800"
-                android:text="אפס סינון"
+                android:text="@string/resetFilter"
                 android:textColor="#FFFFFF" />
 
             <Button
@@ -148,7 +147,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:text="תורן"
+                android:text="@string/toran"
                 android:backgroundTint="#87F7DB61"
                 android:textColor="#000000" />
 
@@ -157,7 +156,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:text="חודש"
+                android:text="@string/month"
                 android:backgroundTint="#87F7DB61"
                 android:textColor="#000000" />
         </LinearLayout>
@@ -180,7 +179,7 @@
             android:padding="8dp">
 
             <TextView
-                android:text="תורן"
+                android:text="@string/toran"
                 android:layout_width="0dp"
                 android:layout_weight="0.5"
                 android:textColor="#FFFFFF"
@@ -189,7 +188,7 @@
                 android:textSize="13sp" />
 
             <TextView
-                android:text="סטטוס נוכחות"
+                android:text="@string/status"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:textColor="#FFFFFF"
@@ -198,7 +197,7 @@
                 android:textSize="13sp" />
 
             <TextView
-                android:text="תאריך"
+                android:text="@string/date"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:textColor="#FFFFFF"
@@ -207,7 +206,7 @@
                 android:textSize="13sp" />
 
             <TextView
-                android:text="מספר פעיל"
+                android:text="@string/acNum"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:textColor="#FFFFFF"
@@ -216,7 +215,7 @@
                 android:textSize="13sp" />
 
             <TextView
-                android:text="שם"
+                android:text="@string/name"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:textColor="#FFFFFF"
@@ -252,7 +251,7 @@
         android:id="@+id/exportToExcelButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="ייצא לאקסל"
+        android:text="@string/exportToExcel"
         android:textSize="16sp"
         android:backgroundTint="#004FA9"
         android:textColor="#FFFFFF"

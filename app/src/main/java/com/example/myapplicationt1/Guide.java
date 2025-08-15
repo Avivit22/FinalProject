@@ -5,28 +5,24 @@ import androidx.annotation.NonNull;
 public class Guide {
     private String uid; // מזהה ייחודי של המשתמש (מ-Firebase Auth וגם כמזהה מסמך)
     private String fullName;
-    private String activeNumber; // שונה מ-organizationId
+    private String activeNumber;
     private String email;
     private String gender;
-    private String birthDate; // שונה מ-dateOfBirth
-    private String dayOfWeek; // שונה מ-classDay (יום בשבוע בו מדריך)
-    private String phone; // שונה מ-phoneNumber
-    private String joinDate; // שונה מ-joiningDate
+    private String birthDate;
+    private String dayOfWeek;
+    private String phone;
+    private String joinDate;
     private String address;
     private String parent1Name;
     private String parent2Name;
-    private String parentPhone; // שונה מ-parentPhoneNumber
+    private String parentPhone;
     private String profileImageBase64;
     private String leavingDate;
-    private String userType; // "guide"
-
-    // managerId נשאר אם אתה עדיין צריך את הקשר הזה במודל שלך, אחרת אפשר להסיר.
-    // אם ה-UID של המנהל הוא חלק ממודל הנתונים של מדריך, השאר אותו.
-    // private String managerId;
+    private String userType;
 
     public Guide() {}
 
-    // בנאי מלא - הוספנו uid והתאמנו שמות שדות
+
     public Guide(String uid, String fullName, String activeNumber, String email, String gender, String birthDate,
                  String dayOfWeek, String phone, String joinDate, String address,
                  String parent1Name, String parent2Name, String parentPhone,

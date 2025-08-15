@@ -12,7 +12,7 @@
         android:src="@drawable/background1"
         android:scaleType="centerCrop"
         android:alpha="0.2"
-        android:contentDescription="רקע" />
+        android:contentDescription="@string/background" />
 
     <!-- כותרת עליונה -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -28,7 +28,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:src="@drawable/logo"
-            android:contentDescription="חזור"
+            android:contentDescription="@string/goBack"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
@@ -38,7 +38,7 @@
             android:id="@+id/titleText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="בקשות ממתינות לאישור מנהל"
+            android:text="@string/reqWaitingToManager"
             android:textSize="19sp"
             android:textStyle="bold"
             android:textColor="#000000"
@@ -64,7 +64,7 @@
         android:id="@+id/tvEmptyMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="אין בקשות ממתינות כרגע"
+        android:text="@string/noWaitingReq"
         android:textSize="16sp"
         android:textColor="#666"
         android:gravity="center"

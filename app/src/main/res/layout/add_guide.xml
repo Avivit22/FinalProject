@@ -97,10 +97,10 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="מספר פעיל:"
+                    android:text="@string/activeNumber"
                     android:gravity="center_vertical"
                     android:layout_marginEnd="8dp"
-                    android:textSize="16dp"/>
+                    android:textSize="16sp"/>
             </LinearLayout>
 
 
@@ -139,7 +139,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/gender"
                     android:gravity="center_vertical"
-                    android:textSize="16dp"
+                    android:textSize="16sp"
                     android:layout_marginEnd="8dp"/>
 
             </LinearLayout>
@@ -172,7 +172,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/birthdate"
                     android:gravity="center_vertical"
-                    android:textSize="16dp"/>
+                    android:textSize="16sp"/>
             </LinearLayout>
 
             <!--  יום בשבוע  -->
@@ -202,7 +202,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/day_for_guide"
                     android:gravity="center_vertical"
-                    android:textSize="16dp"
+                    android:textSize="16sp"
                     android:layout_marginEnd="8dp"/>
 
             </LinearLayout>
@@ -245,7 +245,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/joindate"
                     android:gravity="center_vertical"
-                    android:textSize="16dp"/>
+                    android:textSize="16sp"/>
             </LinearLayout>
 
             <!-- כתובת -->

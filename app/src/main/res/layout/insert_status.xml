@@ -37,13 +37,7 @@
             android:layout_height="0dp"
             android:layout_weight="1" />
 
-        <!-- תמונה בצד ימין -->
-        <!--<ImageView
-            android:id="@+id/options_icon"
-            android:layout_width="30dp"
-            android:layout_height="50dp"
-            android:layout_gravity="end"
-            android:src="@drawable/options_icon" />-->
+
     </LinearLayout>
 
     <!-- טקסט כותרת -->
@@ -53,7 +47,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp"
-        android:text="רישום נוכחות לחוג של היום"
+        android:text="@string/attendanceForToday"
         android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="#000000"
@@ -79,7 +73,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="חיפוש שם חניך"
+            android:hint="@string/search_studentname"
             android:padding="8dp"
             android:background="@null"
             android:textSize="16sp"/>
@@ -119,7 +113,7 @@
         android:id="@+id/saveButton"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:text="שמור"
+        android:text="@string/save"
         android:textSize="20sp"
         android:backgroundTint="#004FA9"
         android:textColor="#FFFFFF"

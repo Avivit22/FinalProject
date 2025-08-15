@@ -46,7 +46,7 @@ public class InsertStatusActivity extends AppCompatActivity {
     private String todayHebrewDay;
     private List<StudentStatus> studentStatuses = new ArrayList<>();
     private Map<String, StudentStatus> existingAttendance = new HashMap<>();
-    private List<StudentStatus> filteredStatuses = new ArrayList<>(); // תוצאה מסוננת
+    private List<StudentStatus> filteredStatuses = new ArrayList<>();
 
 
     @Override

@@ -11,7 +11,7 @@
         android:id="@+id/dialogTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="המרת חניך למדריך"
+        android:text="@string/convertStudentToGuide"
         android:textStyle="bold"
         android:textSize="18sp"
         android:textAlignment="viewStart" />
@@ -20,7 +20,7 @@
         android:id="@+id/dialogMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="האם אתה בטוח שברצונך להמיר את החניך למדריך?"
+        android:text="@string/areYouSureToConvert"
         android:layout_marginTop="12dp"
         android:textAlignment="viewStart" />
 
@@ -36,7 +36,7 @@
             android:id="@+id/btnConfirm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="אישור"
+            android:text="@string/ok"
             android:textSize="14sp"
             android:paddingHorizontal="16dp"
             android:paddingVertical="8dp"
@@ -47,7 +47,7 @@
             android:id="@+id/btnCancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ביטול"
+            android:text="@string/cancel"
             android:textSize="14sp"
             android:paddingHorizontal="16dp"
             android:paddingVertical="8dp"

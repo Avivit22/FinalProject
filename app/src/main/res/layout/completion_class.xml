@@ -52,7 +52,7 @@
                 android:layout_weight="1"
 
                 android:gravity="center"
-                android:text="רישום לשיעור השלמה"
+                android:text="@string/signUpToCompClass"
                 android:textColor="#494646"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -70,7 +70,7 @@
             android:id="@+id/search_student"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="חיפוש שם חניך"
+            android:hint="@string/searchStudentName"
             android:drawableEnd="@drawable/ic_clear"
             android:textSize="18sp"
             android:textColor="#000000"
@@ -102,9 +102,9 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
                     android:paddingStart="8dp"
-                    android:text="באופן כללי, החניך משובץ לחוג בימי :"
+                    android:text="@string/InGeneralTheStudentDayIs"
                     android:textColor="#494646"
-                    android:textSize="18dp" />
+                    android:textSize="18sp" />
 
                 <!-- טקסט ההשלמה -->
                 <TextView
@@ -114,15 +114,15 @@
                     android:layout_marginStart="8dp"
                     android:text=""
                     android:textColor="#494646"
-                    android:textSize="18dp" />
+                    android:textSize="18sp" />
             </LinearLayout>
 
             <TextView
                 android:id="@+id/completion_date_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="החניך יבצע שיעור השלמה בתאריך:"
-                android:textSize="18dp"
+                android:text="@string/compClassWillBeAt"
+                android:textSize="18sp"
                 android:textColor="#494646"
                 android:layout_marginTop="16dp"
                 android:paddingStart="8dp" />
@@ -132,7 +132,7 @@
                 android:id="@+id/completion_date_button"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
-                android:text="מועד שיעור השלמה"
+                android:text="@string/compDate"
                 android:textSize="16sp"
                 android:layout_marginTop="8dp"
                 android:layout_gravity="center"
@@ -160,8 +160,8 @@
                 android:id="@+id/alternative_date_question"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="האם ההשלמה היא במקום תאריך אחר?"
-                android:textSize="18dp"
+                android:text="@string/isItInsteadOfDate"
+                android:textSize="18sp"
                 android:textColor="#494646"
                 android:layout_marginTop="16dp"
                 android:paddingStart="8dp" />
@@ -181,7 +181,7 @@
                     android:layout_gravity="center"
                     android:layout_marginEnd="16dp"
                     android:backgroundTint="#7387CEEB"
-                    android:text="כן"
+                    android:text="@string/yes"
                     android:textColor="#494646"
                     android:textSize="15sp"
                     android:layout_weight="1"
@@ -192,8 +192,8 @@
                     android:id="@+id/no_button"
                     android:layout_width="0dp"
                     android:layout_height="55dp"
-                    android:text="לא, שליחה לאישור מנהל"
-                    android:textSize="15dp"
+                    android:text="@string/no_SendToManager"
+                    android:textSize="15sp"
                     android:textColor="#000000"
                     android:layout_weight="1"
                     android:backgroundTint="#7387CEEB"
@@ -205,8 +205,8 @@
                 android:id="@+id/missing_date_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="רישום חיסור עבור התאריך:"
-                android:textSize="18dp"
+                android:text="@string/subtraction"
+                android:textSize="18sp"
                 android:textColor="#494646"
                 android:layout_marginTop="35dp"
                 android:paddingStart="8dp"
@@ -217,7 +217,7 @@
                 android:id="@+id/missing_date_button"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
-                android:text="בחר תאריך"
+                android:text="@string/chooseDate"
                 android:textSize="16sp"
                 android:textColor="#000000"
                 android:layout_gravity="center"
@@ -245,7 +245,7 @@
                 android:id="@+id/save_button"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:text="שמור"
+                android:text="@string/save"
                 android:backgroundTint="@color/button_save_background"
                 android:textSize="22sp"
                 android:layout_marginTop="24dp"

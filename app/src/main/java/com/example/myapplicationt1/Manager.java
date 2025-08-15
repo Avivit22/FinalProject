@@ -9,7 +9,7 @@ public class Manager {
     private String email;
     private String gender;
     private String birthDate;
-    private String dayOfWeek; // עבור מנהל, שדה זה אולי פחות רלוונטי או שמייצג משהו אחר
+    private String dayOfWeek;
     private String phone;
     private String joinDate;
     private String address;
@@ -18,11 +18,11 @@ public class Manager {
     private String parentPhone;
     private String profileImageBase64;
     private String leavingDate;
-    private String userType; // "manager"
+    private String userType;
 
     public Manager() {}
 
-    // בנאי מלא - הוספנו uid והתאמנו שמות שדות
+
     public Manager(String uid, String fullName, String activeNumber, String email, String gender, String birthDate,
                    String dayOfWeek, String phone, String joinDate, String address,
                    String parent1Name, String parent2Name, String parentPhone,

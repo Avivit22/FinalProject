@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
                             FirebaseUser user = mAuth.getCurrentUser();
                             if (user != null) {
                                 String uid = user.getUid();
-                                // שליפת נתוני המשתמש מ-Firestore מאוסף "users"
+                                // שליפת נתוני המשתמש מ-Firestore מאוסף users
                                 db.collection("users").document(uid).get()
                                         .addOnSuccessListener(documentSnapshot -> {
                                             if (documentSnapshot.exists()) {
